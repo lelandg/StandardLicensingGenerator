@@ -1,0 +1,51 @@
+*.msi
+obj/
+.claude/
+# Common IntelliJ Platform excludes
+Images/
+.idea/
+**.csv~
+morgue/
+
+# User specific
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/shelf/*
+**/.idea/dictionaries
+**/.idea/httpRequests/
+
+# Sensitive or high-churn files
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.xml
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+
+# Rider
+# Rider auto-generates .iml files, and contentModel.xml
+**/.idea/**/*.iml
+**/.idea/**/contentModel.xml
+**/.idea/**/modules.xml
+
+*.suo
+*.user
+.vs/
+[Bb]in/
+[Oo]bj/
+_UpgradeReport_Files/
+[Pp]ackages/
+
+Thumbs.db
+Desktop.ini
+.DS_Store
+cudart64_12.dll
+MeshForge.zip
+runtimes/nvonnxparser_10.dll
+runtimes/nvinfer_plugin_10.dll
+runtimes/nvinfer_10.dll
+Release_Files.txt
+build.log
+MeshForge.wixpdb
+MeshForge.json
+build.log
