@@ -60,7 +60,6 @@ public partial class MainWindow : Window
         var builder = License.New()
             .WithUniqueIdentifier(Guid.NewGuid())
             .LicensedTo(CustomerNameBox.Text, CustomerEmailBox.Text)
-            .WithType(ParseLicenseType())
             .ExpiresAt(ExpirationPicker.SelectedDate ?? DateTime.MaxValue)
             .WithProductFeatures(f =>
             {
