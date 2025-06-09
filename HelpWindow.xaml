@@ -1,0 +1,16 @@
+<Window x:Class="StandardLicensingGenerator.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Help" Height="400" Width="600">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="10">
+            <TextBlock Text="Standard Licensing Generator Help" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="Wrap">
+This tool creates licenses compatible with the Standard.Licensing library. Fill in the fields for your application, choose your private key and click Generate License.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+The generated license can be saved to a file using the File menu. Distribute the public key with your application to validate the license.
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
