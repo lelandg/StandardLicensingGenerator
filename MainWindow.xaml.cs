@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Win32;
 using Standard.Licensing;
 using Standard.Licensing.Security.Cryptography;
@@ -16,6 +17,27 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         LicenseTypeBox.SelectedIndex = 0;
+        PreviewKeyDown += On_KeyDown;
+    }
+
+    private void On_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            var result = MessageBox.Show(
+                this,
+                "Do you want to exit the application?",
+                "Exit",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question,
+                MessageBoxResult.Yes
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                Close();
+            }
+        }
     }
 
     private void BrowseKey_Click(object sender, RoutedEventArgs e)
@@ -110,5 +132,16 @@ public partial class MainWindow : Window
         var help = new HelpWindow();
         help.Owner = this;
         help.ShowDialog();
+    }
+
+    private void OpenKeyPairGenerator_Click(object sender, RoutedEventArgs e)
+    {
+        var keyPairWindow = new KeyPairGeneratorWindow();
+        keyPairWindow.Owner = this;
+        bool? ok = keyPairWindow.ShowDialog();
+        if (ok == true)
+        {
+            if (keyPairWindow.InsertedPrivateKeyPath != null) KeyFileBox.Text = keyPairWindow.InsertedPrivateKeyPath;
+        }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StandardLicensingGenerator"
         mc:Ignorable="d"
-        Title="Standard Licensing Generator" Height="550" Width="800">
+        Title="Standard Licensing Generator" Height="650" Width="800">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -15,11 +15,17 @@
             </MenuItem>
             <MenuItem Header="Help" Click="ShowHelp_Click" />
         </Menu>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="20">
-                <TextBlock Text="License Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,10" />
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!-- Form contents -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="License Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -62,13 +68,23 @@
                     <TextBlock Text="Private Key File:" Grid.Row="7" Grid.Column="0" Margin="0,2"/>
                     <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" Margin="0,2">
                         <TextBox x:Name="KeyFileBox" Width="300" Margin="0,0,5,0"/>
-                        <Button Content="Browse" Click="BrowseKey_Click" />
+                        <Button Content="Browse" Click="BrowseKey_Click" Margin="5" Padding="5"/>
+                        <Button Content="Generate Key Pair" Click="OpenKeyPairGenerator_Click" Margin="5"  Padding="5"/>
                     </StackPanel>
+                    <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Content="Generate License" 
+                            Margin="0,10,0,0" Width="150" Click="GenerateLicense_Click"  Padding="5"
+                            HorizontalContentAlignment="Center" IsDefault="True"/>
                 </Grid>
-
-                <Button Content="Generate License" Margin="0,10,0,0" Width="150" HorizontalAlignment="Left" Click="GenerateLicense_Click" />
-                <TextBox x:Name="ResultBox" Margin="0,10,0,0" Height="150" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
             </StackPanel>
-        </ScrollViewer>
+            <!-- ResultBox -->
+            <TextBox x:Name="ResultBox" 
+                     Grid.Row="1"
+                     Margin="0,10,0,0"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto"
+                     VerticalAlignment="Stretch"/>
+        </Grid>
     </DockPanel>
 </Window>
