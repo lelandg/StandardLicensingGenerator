@@ -21,6 +21,7 @@ The UI is designed with sensible defaults and labeled inputs so generating a lic
 3. Select the desired license type and expiration date.
 4. Optionally add extra attributes in JSON format (e.g. `{ "Seats": "5" }`).
 5. Browse to your private key file. PEM keys are recommended, but existing XML keys are also supported.
+   Keys must be unencrypted; passphrase-protected keys are not currently supported.
 6. Click **Generate License** to view the resulting license text.
 7. Use **File → Save License** to store the license in a `.lic` file.
 
