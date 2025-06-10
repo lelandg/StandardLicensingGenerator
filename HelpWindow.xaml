@@ -1,16 +1,133 @@
 <Window x:Class="StandardLicensingGenerator.HelpWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Help" Height="400" Width="600">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="10">
-            <TextBlock Text="Standard Licensing Generator Help" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-            <TextBlock TextWrapping="Wrap">
-This tool creates licenses compatible with the Standard.Licensing library. Fill in the fields for your application, choose your private key and click Generate License.
-            </TextBlock>
-            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
-The generated license can be saved to a file using the File menu. Distribute the public key with your application to validate the license.
-            </TextBlock>
-        </StackPanel>
-    </ScrollViewer>
+        Title="Help" Height="600" Width="800"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2E75B6" Padding="15">
+            <TextBlock Text="Standard Licensing Generator Help" 
+                       FontSize="24" FontWeight="SemiBold" 
+                       Foreground="White"/>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
+            <StackPanel Margin="20">
+                <!-- Overview Section -->
+                <Border Background="White" CornerRadius="4" Margin="0,0,0,15" Padding="15" BorderBrush="#DDDDDD" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Overview" FontSize="18" FontWeight="SemiBold" Foreground="#2E75B6" Margin="0,0,0,10"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+                            This tool creates licenses compatible with the Standard.Licensing library. It allows you to generate,
+                            sign, and save license files that can be validated in your applications.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Basic Usage Section -->
+                <Border Background="White" CornerRadius="4" Margin="0,0,0,15" Padding="15" BorderBrush="#DDDDDD" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Basic Usage" FontSize="18" FontWeight="SemiBold" Foreground="#2E75B6" Margin="0,0,0,10"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">1.</Run> Enter your product details and customer information.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">2.</Run> Select the desired license type (Standard, Trial, or Custom).
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">3.</Run> Set an expiration date if applicable.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">4.</Run> Add extra attributes in JSON format if needed (e.g. { "Seats": "5" }).
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">5.</Run> Browse to select your RSA private key file (XML format).
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">6.</Run> Click <Run FontWeight="SemiBold">Generate License</Run> to create the license.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
+                            <Run FontWeight="SemiBold">7.</Run> Use <Run FontWeight="SemiBold">File → Save License</Run> to store the license as a .lic file.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- License Types Section -->
+                <Border Background="White" CornerRadius="4" Margin="0,0,0,15" Padding="15" BorderBrush="#DDDDDD" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="License Types" FontSize="18" FontWeight="SemiBold" Foreground="#2E75B6" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Standard:" FontWeight="SemiBold" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Margin="0,0,0,5">
+                                A normal license without trial-specific flags. Can be perpetual or with an expiration date.
+                            </TextBlock>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Trial:" FontWeight="SemiBold" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="0,0,0,5">
+                                A time-limited license with the Trial flag set. Requires an expiration date.
+                            </TextBlock>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Custom:" FontWeight="SemiBold" Margin="0,0,10,5"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Margin="0,0,0,5">
+                                Allows defining a custom license type. Use this for special licensing scenarios.
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Keys and Security Section -->
+                <Border Background="White" CornerRadius="4" Margin="0,0,0,15" Padding="15" BorderBrush="#DDDDDD" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Keys and Security" FontSize="18" FontWeight="SemiBold" Foreground="#2E75B6" Margin="0,0,0,10"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+                            <Run FontWeight="SemiBold">Private Key:</Run> Used to sign licenses. Keep this secure and never distribute it with your application.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+                            <Run FontWeight="SemiBold">Public Key:</Run> Distribute this with your application to validate licenses. It can only verify
+                            signatures, not create them.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap">
+                            Both keys must be in XML format compatible with the Standard.Licensing library.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Implementation Tips Section -->
+                <Border Background="White" CornerRadius="4" Margin="0,0,0,15" Padding="15" BorderBrush="#DDDDDD" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Implementation Tips" FontSize="18" FontWeight="SemiBold" Foreground="#2E75B6" Margin="0,0,0,10"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+                            <Run FontWeight="SemiBold">• License Validation:</Run> In your application, use the public key to verify the license signature
+                            and check expiration dates.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,10">
+                            <Run FontWeight="SemiBold">• Custom Attributes:</Run> Use the JSON attributes field to add any application-specific
+                            license properties like feature flags, seat counts, or module access.
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold">• License Storage:</Run> Allow users to import licenses via file selection
+                            and store them in a secure location like the application data folder.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>

@@ -5,20 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StandardLicensingGenerator"
         mc:Ignorable="d"
-        Title="Standard Licensing Generator" Height="650" Width="800">
+        Title="Standard Licensing Generator" Height="650" Width="800"
+        WindowStyle="SingleBorderWindow" ResizeMode="CanResize">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="File">
+            <MenuItem Header="_File">
                 <MenuItem Header="Save License" Click="SaveLicense_Click" />
                 <Separator />
                 <MenuItem Header="Exit" Click="Exit_Click" />
             </MenuItem>
-            <MenuItem Header="Help" Click="ShowHelp_Click" />
+            <MenuItem Header="_Help" Click="ShowHelp_Click" />
         </Menu>
-        <Grid Margin="20">
+        <Grid Margin="15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <!-- Form contents -->
             <StackPanel Grid.Row="0">
@@ -68,10 +70,10 @@
                     <TextBlock Text="Private Key File:" Grid.Row="7" Grid.Column="0" Margin="0,2"/>
                     <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" Margin="0,2">
                         <TextBox x:Name="KeyFileBox" Width="300" Margin="0,0,5,0"/>
-                        <Button Content="Browse" Click="BrowseKey_Click" Margin="5" Padding="5"/>
-                        <Button Content="Generate Key Pair" Click="OpenKeyPairGenerator_Click" Margin="5"  Padding="5"/>
+                        <Button Content="_Browse" Click="BrowseKey_Click" Margin="5" Padding="5"/>
+                        <Button Content="Generate Key _Pair" Click="OpenKeyPairGenerator_Click" Margin="5"  Padding="5"/>
                     </StackPanel>
-                    <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Content="Generate License" 
+                    <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Content="_Generate License" 
                             Margin="0,10,0,0" Width="150" Click="GenerateLicense_Click"  Padding="5"
                             HorizontalContentAlignment="Center" IsDefault="True"/>
                 </Grid>
@@ -85,6 +87,19 @@
                      AcceptsReturn="True"
                      VerticalScrollBarVisibility="Auto"
                      VerticalAlignment="Stretch"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="170"></ColumnDefinition>
+                    <ColumnDefinition Width="170"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="1" Content="_Save License" Click="SaveLicense_Click" Margin="0,10,0,0" Width="150" Padding="5" HorizontalContentAlignment="Center"></Button>
+                <Button Grid.Column="2" Content="_Copy to Clipboard" Click="CopyResultToClipboard_Click" Margin="0,10,0,0" Width="150" Padding="5" HorizontalContentAlignment="Center"></Button>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

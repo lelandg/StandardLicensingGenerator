@@ -1,6 +1,8 @@
-using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Windows;
+using System.Windows.Input;
+using System.Xml;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -8,12 +10,14 @@ using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 using StandardLicensingGenerator.UiSettings;
 
-public partial class KeyPairGeneratorWindow : Window
+namespace StandardLicensingGenerator;
+
+public partial class KeyPairGeneratorWindow
 {
     private AsymmetricCipherKeyPair? _keyPair;
     private string? _privateKeyPath;
     private string? _publicKeyPath;
-    private WindowSettingsManager _settingsManager;
+    private readonly WindowSettingsManager _settingsManager;
 
     public KeyPairGeneratorWindow()
     {
@@ -21,8 +25,17 @@ public partial class KeyPairGeneratorWindow : Window
         _settingsManager = new WindowSettingsManager(this);
         KeySizeBox.SelectedIndex = 0;
         Closing += On_Closing;
+        PreviewKeyDown += On_KeyDown;
     }
     
+    private void On_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            Close();
+        }
+    }
+ 
     private void On_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         _settingsManager.Save();
@@ -52,14 +65,16 @@ public partial class KeyPairGeneratorWindow : Window
         }
         var dlg = new Microsoft.Win32.SaveFileDialog
         {
-            Filter = "Private Key (*.pem)|*.pem|All files (*.*)|*.*",
-            FileName = "private_key.pem"
+            Filter = "PEM Key Files (*.pem)|*.pem|All files (*.*)|*.*", // Changed filter to PEM
+            FileName = "private_key.pem" // Changed default filename to .pem
         };
         if (dlg.ShowDialog() == true)
         {
-            using var sw = new StreamWriter(dlg.FileName);
-            var pemWriter = new PemWriter(sw);
+            using var stringWriter = new StringWriter();
+            var pemWriter = new PemWriter(stringWriter);
             pemWriter.WriteObject(_keyPair.Private);
+            File.WriteAllText(dlg.FileName, stringWriter.ToString());
+
             ResultBox.Text = $"Private key saved to {dlg.FileName}";
             _privateKeyPath = dlg.FileName;
             CheckEnableInsert();
@@ -75,14 +90,16 @@ public partial class KeyPairGeneratorWindow : Window
         }
         var dlg = new Microsoft.Win32.SaveFileDialog
         {
-            Filter = "Public Key (*.pem)|*.pem|All files (*.*)|*.*",
-            FileName = "public_key.pem"
+            Filter = "PEM Key Files (*.pem)|*.pem|All files (*.*)|*.*", // Changed filter to PEM
+            FileName = "public_key.pem" // Changed default filename to .pem
         };
         if (dlg.ShowDialog() == true)
         {
-            using var sw = new StreamWriter(dlg.FileName);
-            var pemWriter = new PemWriter(sw);
+            using var stringWriter = new StringWriter();
+            var pemWriter = new PemWriter(stringWriter);
             pemWriter.WriteObject(_keyPair.Public);
+            File.WriteAllText(dlg.FileName, stringWriter.ToString());
+
             ResultBox.Text = $"Public key saved to {dlg.FileName}";
             _publicKeyPath = dlg.FileName;
             CheckEnableInsert();

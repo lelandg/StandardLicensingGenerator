@@ -1,20 +1,76 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
 using Standard.Licensing;
-using Standard.Licensing.Security.Cryptography;
 using StandardLicensingGenerator.UiSettings;
+using System.Text; // Added for StringBuilder
 
 namespace StandardLicensingGenerator;
 
-public partial class MainWindow : Window
+// Extension methods for XML key format compatibility
+public static class RsaExtensions
 {
-    private WindowSettingsManager _settingsManager; 
+    public static void FromXmlString(this System.Security.Cryptography.RSA rsa, string xmlString)
+    {
+        var parameters = new System.Security.Cryptography.RSAParameters();
+        var xmlDoc = new System.Xml.XmlDocument();
+        xmlDoc.LoadXml(xmlString);
+
+        if (xmlDoc.DocumentElement == null) throw new ArgumentException("Invalid XML format", nameof(xmlString));
+
+        if (xmlDoc.DocumentElement.Name.Equals("RSAKeyValue"))
+        {
+            foreach (System.Xml.XmlNode node in xmlDoc.DocumentElement.ChildNodes)
+            {
+                switch (node.Name)
+                {
+                    case "Modulus": parameters.Modulus = Convert.FromBase64String(node.InnerText); break;
+                    case "Exponent": parameters.Exponent = Convert.FromBase64String(node.InnerText); break;
+                    case "P": parameters.P = Convert.FromBase64String(node.InnerText); break;
+                    case "Q": parameters.Q = Convert.FromBase64String(node.InnerText); break;
+                    case "DP": parameters.DP = Convert.FromBase64String(node.InnerText); break;
+                    case "DQ": parameters.DQ = Convert.FromBase64String(node.InnerText); break;
+                    case "InverseQ": parameters.InverseQ = Convert.FromBase64String(node.InnerText); break;
+                    case "D": parameters.D = Convert.FromBase64String(node.InnerText); break;
+                }
+            }
+            rsa.ImportParameters(parameters);
+        }
+        else
+        {
+            throw new ArgumentException("Invalid XML format", nameof(xmlString));
+        }
+    }
+
+    public static string ToXmlString(this System.Security.Cryptography.RSA rsa, bool includePrivateParameters)
+    {
+        var parameters = rsa.ExportParameters(includePrivateParameters);
+
+        var sb = new StringBuilder();
+        sb.Append("<RSAKeyValue>");
+        sb.Append("<Modulus>" + Convert.ToBase64String(parameters.Modulus ?? Array.Empty<byte>()) + "</Modulus>");
+        sb.Append("<Exponent>" + Convert.ToBase64String(parameters.Exponent ?? Array.Empty<byte>()) + "</Exponent>");
+
+        if (includePrivateParameters)
+        {
+            sb.Append("<P>" + Convert.ToBase64String(parameters.P ?? Array.Empty<byte>()) + "</P>");
+            sb.Append("<Q>" + Convert.ToBase64String(parameters.Q ?? Array.Empty<byte>()) + "</Q>");
+            sb.Append("<DP>" + Convert.ToBase64String(parameters.DP ?? Array.Empty<byte>()) + "</DP>");
+            sb.Append("<DQ>" + Convert.ToBase64String(parameters.DQ ?? Array.Empty<byte>()) + "</DQ>");
+            sb.Append("<InverseQ>" + Convert.ToBase64String(parameters.InverseQ ?? Array.Empty<byte>()) + "</InverseQ>");
+            sb.Append("<D>" + Convert.ToBase64String(parameters.D ?? Array.Empty<byte>()) + "</D>");
+        }
+
+        sb.Append("</RSAKeyValue>");
+        return sb.ToString();
+    }
+}
+
+public partial class MainWindow
+{
+    private readonly WindowSettingsManager _settingsManager; 
     public MainWindow()
     {
         InitializeComponent();
@@ -31,21 +87,26 @@ public partial class MainWindow : Window
 
     private void On_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Escape)
+        switch (e.Key)
         {
-            var result = MessageBox.Show(
-                this,
-                "Do you want to exit the application?",
-                "Exit",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question,
-                MessageBoxResult.Yes
-            );
+            case Key.Escape:
+                var result = MessageBox.Show(
+                    this,
+                    "Do you want to exit the application?",
+                    "Exit",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question,
+                    MessageBoxResult.Yes
+                );
 
-            if (result == MessageBoxResult.Yes)
-            {
-                Close();
-            }
+                if (result == MessageBoxResult.Yes)
+                {
+                    Close();
+                }
+                break;
+            case Key.F1:
+                ShowHelp_Click(this, new RoutedEventArgs());
+                break;
         }
     }
 
@@ -53,12 +114,41 @@ public partial class MainWindow : Window
     {
         var dlg = new OpenFileDialog
         {
-            Filter = "XML Key Files (*.xml)|*.xml|All files (*.*)|*.*"
+            Filter = "XML Key Files (*.xml)|*.xml|PEM Key Files (*.pem)|*.pem|All files (*.*)|*.*"
         };
         if (dlg.ShowDialog() == true)
         {
             KeyFileBox.Text = dlg.FileName;
         }
+    }
+
+    private static string ExtractBase64FromPem(string pemString)
+    {
+        var lines = pemString.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var base64StringBuilder = new StringBuilder();
+        bool keyStarted = false;
+
+        foreach (var line in lines)
+        {
+            if (line.StartsWith("-----END")) // Covers various key types like "END RSA PRIVATE KEY", "END PRIVATE KEY"
+            {
+                break; 
+            }
+            if (keyStarted)
+            {
+                base64StringBuilder.Append(line.Trim()); // Trim to remove any potential whitespace within lines
+            }
+            if (line.StartsWith("-----BEGIN")) // Covers various key types
+            {
+                keyStarted = true;
+            }
+        }
+
+        if (base64StringBuilder.Length == 0)
+        {
+            throw new ArgumentException("PEM string does not contain a valid Base64 encoded key block, or the format is incorrect.");
+        }
+        return base64StringBuilder.ToString();
     }
 
     private void GenerateLicense_Click(object sender, RoutedEventArgs e)
@@ -103,20 +193,62 @@ public partial class MainWindow : Window
                     a.Add(kvp.Key, kvp.Value);
             });
 
-        var privateKey = File.ReadAllText(KeyFileBox.Text);
-        var license = builder.CreateAndSignWithPrivateKey(privateKey, null);
-        ResultBox.Text = license.ToString();
-    }
-
-    private LicenseType ParseLicenseType()
-    {
-        if (LicenseTypeBox.SelectedItem is ComboBoxItem item)
+        try
         {
-            var text = item.Content?.ToString();
-            if (Enum.TryParse<LicenseType>(text, out var type))
-                return type;
+            string privateKeyPemString = File.ReadAllText(KeyFileBox.Text);
+            string keyFormat = Path.GetExtension(KeyFileBox.Text).ToLowerInvariant();
+
+            if (keyFormat == ".xml")
+            {
+                try
+                {
+                    privateKeyPemString = KeyFormatUtility.ConvertXmlToPem(privateKeyPemString);
+                }
+                catch (Exception xmlEx)
+                {
+                    MessageBox.Show($"Error processing XML key file: {xmlEx.Message}\n\nPlease ensure your XML key file is correctly formatted. You can also use a PEM key directly.",
+                        "Key Format Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+            else if (keyFormat != ".pem")
+            {
+                MessageBox.Show("Unsupported key file format. Please use a .pem or .xml file.",
+                    "Invalid Key Format", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            string base64PrivateKey;
+            try
+            {
+                base64PrivateKey = ExtractBase64FromPem(privateKeyPemString);
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show($"Error processing PEM key: {ex.Message}\n\nPlease ensure you\'re using a properly formatted PEM RSA private key file.", 
+                    "Invalid PEM Format", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            if (string.IsNullOrWhiteSpace(base64PrivateKey))
+            {
+                 MessageBox.Show("Could not extract Base64 content from the PEM key file.\n\nPlease ensure the file is a valid PEM-encoded private key.",
+                    "Invalid Key Content", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var license = builder.CreateAndSignWithPrivateKey(base64PrivateKey, "");
+            ResultBox.Text = license.ToString();
         }
-        return LicenseType.Standard;
+        catch (Exception ex)
+        {
+            string errorSummary = $"Error generating license: {ex.Message}";
+            MessageBox.Show(errorSummary, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            // Log detailed exception info for troubleshooting
+            string detailedInfo = GetDetailedExceptionInfo(ex);
+            ResultBox.Text = $"Error Details:\n{detailedInfo}";
+        }
     }
 
     private void SaveLicense_Click(object sender, RoutedEventArgs e)
@@ -152,5 +284,26 @@ public partial class MainWindow : Window
         {
             if (keyPairWindow.InsertedPrivateKeyPath != null) KeyFileBox.Text = keyPairWindow.InsertedPrivateKeyPath;
         }
+    }
+
+    private string GetDetailedExceptionInfo(Exception ex)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"Exception: {ex.GetType().FullName}");
+        sb.AppendLine($"Message: {ex.Message}");
+        sb.AppendLine($"Stack Trace: {ex.StackTrace}");
+
+        if (ex.InnerException != null)
+        {
+            sb.AppendLine("\nInner Exception:");
+            sb.AppendLine(GetDetailedExceptionInfo(ex.InnerException));
+        }
+
+        return sb.ToString();
+    }
+
+    private void CopyResultToClipboard_Click(object sender, RoutedEventArgs e)
+    {
+        Clipboard.SetText(ResultBox.Text);
     }
 }
