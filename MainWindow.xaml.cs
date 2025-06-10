@@ -122,34 +122,6 @@ public partial class MainWindow
         }
     }
 
-    private static string ExtractBase64FromPem(string pemString)
-    {
-        var lines = pemString.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        var base64StringBuilder = new StringBuilder();
-        bool keyStarted = false;
-
-        foreach (var line in lines)
-        {
-            if (line.StartsWith("-----END")) // Covers various key types like "END RSA PRIVATE KEY", "END PRIVATE KEY"
-            {
-                break; 
-            }
-            if (keyStarted)
-            {
-                base64StringBuilder.Append(line.Trim()); // Trim to remove any potential whitespace within lines
-            }
-            if (line.StartsWith("-----BEGIN")) // Covers various key types
-            {
-                keyStarted = true;
-            }
-        }
-
-        if (base64StringBuilder.Length == 0)
-        {
-            throw new ArgumentException("PEM string does not contain a valid Base64 encoded key block, or the format is incorrect.");
-        }
-        return base64StringBuilder.ToString();
-    }
 
     private void GenerateLicense_Click(object sender, RoutedEventArgs e)
     {
@@ -218,26 +190,7 @@ public partial class MainWindow
                 return;
             }
 
-            string base64PrivateKey;
-            try
-            {
-                base64PrivateKey = ExtractBase64FromPem(privateKeyPemString);
-            }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show($"Error processing PEM key: {ex.Message}\n\nPlease ensure you\'re using a properly formatted PEM RSA private key file.", 
-                    "Invalid PEM Format", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            
-            if (string.IsNullOrWhiteSpace(base64PrivateKey))
-            {
-                 MessageBox.Show("Could not extract Base64 content from the PEM key file.\n\nPlease ensure the file is a valid PEM-encoded private key.",
-                    "Invalid Key Content", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var license = builder.CreateAndSignWithPrivateKey(base64PrivateKey, "");
+            var license = builder.CreateAndSignWithPrivateKey(privateKeyPemString, "");
             ResultBox.Text = license.ToString();
         }
         catch (Exception ex)

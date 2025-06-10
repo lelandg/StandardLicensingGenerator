@@ -20,7 +20,7 @@ The UI is designed with sensible defaults and labeled inputs so generating a lic
 2. Enter your product details and customer information.
 3. Select the desired license type and expiration date.
 4. Optionally add extra attributes in JSON format (e.g. `{ "Seats": "5" }`).
-5. Browse to your private key file (XML RSA key used to sign licenses).
+5. Browse to your private key file. PEM keys are recommended, but existing XML keys are also supported.
 6. Click **Generate License** to view the resulting license text.
 7. Use **File → Save License** to store the license in a `.lic` file.
 
@@ -43,7 +43,7 @@ To ensure a user holds a valid license for your application:
 Example (pseudocode):
 ```csharp 
 // C# var licenseText = File.ReadAllText("path/to/license.lic"); var license = License.Load(licenseText);
-var publicKey = "..."; // Your XML public key string or file content
+var publicKey = "..."; // Your PEM or XML public key string or file content
 if (!license.VerifySignature(publicKey)) { // Invalid license throw new UnauthorizedAccessException("License verification failed."); }
 if (license.Type == LicenseType.Trial && license.Expiration < DateTime.Now) { // License has expired throw new LicenseExpiredException(); }
 // Access license attributes var customerName = license.Customer.Name; var seats = license.AdditionalAttributes.Get("Seats");

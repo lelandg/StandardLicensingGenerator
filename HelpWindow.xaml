@@ -48,7 +48,7 @@
                             <Run FontWeight="SemiBold">4.</Run> Add extra attributes in JSON format if needed (e.g. { "Seats": "5" }).
                         </TextBlock>
                         <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
-                            <Run FontWeight="SemiBold">5.</Run> Browse to select your RSA private key file (XML format).
+                            <Run FontWeight="SemiBold">5.</Run> Browse to select your RSA private key file (PEM or XML format).
                         </TextBlock>
                         <TextBlock TextWrapping="Wrap" Margin="0,0,0,5">
                             <Run FontWeight="SemiBold">6.</Run> Click <Run FontWeight="SemiBold">Generate License</Run> to create the license.
@@ -104,7 +104,7 @@
                             signatures, not create them.
                         </TextBlock>
                         <TextBlock TextWrapping="Wrap">
-                            Both keys must be in XML format compatible with the Standard.Licensing library.
+                            Keys may be in PEM or XML format compatible with the Standard.Licensing library.
                         </TextBlock>
                     </StackPanel>
                 </Border>
