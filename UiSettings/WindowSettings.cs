@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Windows;
 
 namespace StandardLicensingGenerator.UiSettings;
@@ -9,6 +10,7 @@ public class WindowSettings
     public double Width { get; set; }
     public double Height { get; set; }
     public WindowState WindowState { get; set; }
+    public Dictionary<string, string>? ControlValues { get; set; }
 
     public static WindowSettings FromWindow(Window window)
     {
