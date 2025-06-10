@@ -91,4 +91,40 @@ public static class KeyFormatUtility
         pemWriter.WriteObject(privateKeyInfo);
         return stringWriter.ToString();
     }
+
+    /// <summary>
+    /// Extracts the Base64 encoded body from a PEM formatted key string.
+    /// If the input already appears to be Base64, it is returned unchanged.
+    /// </summary>
+    /// <param name="pemKey">PEM formatted key</param>
+    /// <returns>Base64 encoded key content</returns>
+    public static string GetBase64Key(string pemKey)
+    {
+        const string pkcs8Header = "-----BEGIN PRIVATE KEY-----";
+        const string pkcs8Footer = "-----END PRIVATE KEY-----";
+        const string rsaHeader = "-----BEGIN RSA PRIVATE KEY-----";
+        const string rsaFooter = "-----END RSA PRIVATE KEY-----";
+
+        string CleanSection(string input, string header, string footer)
+        {
+            int start = input.IndexOf(header, StringComparison.Ordinal);
+            if (start < 0) return input;
+
+            start += header.Length;
+            int end = input.IndexOf(footer, start, StringComparison.Ordinal);
+            if (end < 0) return input;
+
+            string body = input.Substring(start, end - start);
+            return body.Replace("\r", string.Empty).Replace("\n", string.Empty).Trim();
+        }
+
+        if (pemKey.Contains(pkcs8Header))
+            return CleanSection(pemKey, pkcs8Header, pkcs8Footer);
+
+        if (pemKey.Contains(rsaHeader))
+            return CleanSection(pemKey, rsaHeader, rsaFooter);
+
+        // Assume already base64
+        return pemKey.Replace("\r", string.Empty).Replace("\n", string.Empty).Trim();
+    }
 }

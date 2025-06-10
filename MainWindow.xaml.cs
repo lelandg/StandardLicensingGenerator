@@ -191,8 +191,9 @@ public partial class MainWindow
             }
 
             privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
+            var base64Key = KeyFormatUtility.GetBase64Key(privateKeyPemString);
 
-            var license = builder.CreateAndSignWithPrivateKey(privateKeyPemString, "");
+            var license = builder.CreateAndSignWithPrivateKey(base64Key, "");
             ResultBox.Text = license.ToString();
         }
         catch (Exception ex)
