@@ -19,7 +19,6 @@ public partial class KeyPairGeneratorWindow : Window
     {
         InitializeComponent();
         _settingsManager = new WindowSettingsManager(this);
-        _settingsManager.Load();
         KeySizeBox.SelectedIndex = 0;
         Closing += On_Closing;
     }

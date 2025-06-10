@@ -20,7 +20,6 @@ public partial class MainWindow : Window
         InitializeComponent();
         LicenseTypeBox.SelectedIndex = 0;
         _settingsManager = new WindowSettingsManager(this);
-        _settingsManager.Load();
         PreviewKeyDown += On_KeyDown;
         Closing += On_Closing;
     }
