@@ -6,18 +6,29 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
+using StandardLicensingGenerator.UiSettings;
 
 public partial class KeyPairGeneratorWindow : Window
 {
     private AsymmetricCipherKeyPair? _keyPair;
     private string? _privateKeyPath;
     private string? _publicKeyPath;
+    private WindowSettingsManager _settingsManager;
 
     public KeyPairGeneratorWindow()
     {
         InitializeComponent();
+        _settingsManager = new WindowSettingsManager(this);
+        _settingsManager.Load();
         KeySizeBox.SelectedIndex = 0;
+        Closing += On_Closing;
     }
+    
+    private void On_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        _settingsManager.Save();
+    }
+
 
     private void GenerateKeyPair_Click(object sender, RoutedEventArgs e)
     {

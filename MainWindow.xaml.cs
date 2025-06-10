@@ -8,16 +8,26 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using Standard.Licensing;
 using Standard.Licensing.Security.Cryptography;
+using StandardLicensingGenerator.UiSettings;
 
 namespace StandardLicensingGenerator;
 
 public partial class MainWindow : Window
 {
+    private WindowSettingsManager _settingsManager; 
     public MainWindow()
     {
         InitializeComponent();
         LicenseTypeBox.SelectedIndex = 0;
+        _settingsManager = new WindowSettingsManager(this);
+        _settingsManager.Load();
         PreviewKeyDown += On_KeyDown;
+        Closing += On_Closing;
+    }
+
+    private void On_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        _settingsManager.Save();
     }
 
     private void On_KeyDown(object sender, KeyEventArgs e)
