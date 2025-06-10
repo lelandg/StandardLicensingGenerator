@@ -193,8 +193,20 @@ public partial class MainWindow
             privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
             var base64Key = KeyFormatUtility.GetBase64Key(privateKeyPemString);
 
-            var license = builder.CreateAndSignWithPrivateKey(base64Key, "");
+            var license = builder.CreateAndSignWithPrivateKey(base64Key, null);
             ResultBox.Text = license.ToString();
+        }
+        catch (ArgumentException argEx) when (argEx.Message.Contains("Bad sequence size"))
+        {
+            MessageBox.Show(
+                "The selected private key appears to be encrypted with a passphrase. " +
+                "This tool currently supports only unencrypted keys.",
+                "Unsupported Key",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+
+            string detailedInfo = GetDetailedExceptionInfo(argEx);
+            ResultBox.Text = $"Error Details:\n{detailedInfo}";
         }
         catch (Exception ex)
         {
