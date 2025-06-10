@@ -190,6 +190,8 @@ public partial class MainWindow
                 return;
             }
 
+            privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
+
             var license = builder.CreateAndSignWithPrivateKey(privateKeyPemString, "");
             ResultBox.Text = license.ToString();
         }

@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Pkcs;
 
 namespace StandardLicensingGenerator;
 
@@ -57,5 +58,37 @@ public static class KeyFormatUtility
         {
             throw new ArgumentException($"Failed to convert XML key to PEM: {ex.Message}", nameof(xmlKey), ex);
         }
+    }
+
+    /// <summary>
+    /// Ensures the provided PEM string is in PKCS#8 format.
+    /// Converts RSA PRIVATE KEY blocks to PRIVATE KEY blocks if needed.
+    /// </summary>
+    /// <param name="pemKey">The PEM formatted private key</param>
+    /// <returns>PEM string in PKCS#8 format</returns>
+    public static string NormalizePrivateKey(string pemKey)
+    {
+        if (!pemKey.Contains("BEGIN RSA PRIVATE KEY"))
+        {
+            return pemKey;
+        }
+
+        using var reader = new StringReader(pemKey);
+        var pemReader = new PemReader(reader);
+        var obj = pemReader.ReadObject();
+
+        AsymmetricKeyParameter keyParameter = obj switch
+        {
+            AsymmetricCipherKeyPair pair => pair.Private,
+            AsymmetricKeyParameter param => param,
+            _ => throw new ArgumentException("Unsupported RSA private key format", nameof(pemKey))
+        };
+
+        var privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyParameter);
+
+        using var stringWriter = new StringWriter();
+        var pemWriter = new PemWriter(stringWriter);
+        pemWriter.WriteObject(privateKeyInfo);
+        return stringWriter.ToString();
     }
 }
