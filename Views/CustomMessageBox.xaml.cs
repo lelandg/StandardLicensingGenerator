@@ -24,36 +24,98 @@ namespace StandardLicensingGenerator.Views
         private CustomMessageBox()
         {
             InitializeComponent();
-            KeyDown += (sender, e) =>
+            KeyDown += CustomMessageBox_KeyDown;
+        }
+
+        private void CustomMessageBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // Skip if Alt is pressed - this is handled by WPF's built-in access key system
+            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Alt) == System.Windows.Input.ModifierKeys.Alt)
             {
-                if (e.Key == System.Windows.Input.Key.Escape)
-                {
-                    Result = MessageBoxResult.Cancel;
-                    DialogResult = false;
-                    Close();
-                }
-            };
+                return;
+            }
+
+            // Handle common keyboard shortcuts for dialog buttons
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.Escape:
+                    if (CancelButton.Visibility == Visibility.Visible)
+                    {
+                        Result = MessageBoxResult.Cancel;
+                        DialogResult = false;
+                        Close();
+                    }
+                    else if (NoButton.Visibility == Visibility.Visible)
+                    {
+                        Result = MessageBoxResult.No;
+                        DialogResult = false;
+                        Close();
+                    }
+                    break;
+                case System.Windows.Input.Key.Y:
+                    if (YesButton.Visibility == Visibility.Visible)
+                    {
+                        Result = MessageBoxResult.Yes;
+                        DialogResult = true;
+                        Close();
+                    }
+                    break;
+                case System.Windows.Input.Key.N:
+                    if (NoButton.Visibility == Visibility.Visible)
+                    {
+                        Result = MessageBoxResult.No;
+                        DialogResult = false;
+                        Close();
+                    }
+                    break;
+                case System.Windows.Input.Key.O:
+                    if (OkButton.Visibility == Visibility.Visible)
+                    {
+                        Result = MessageBoxResult.OK;
+                        DialogResult = true;
+                        Close();
+                    }
+                    break;
+                case System.Windows.Input.Key.C:
+                    if (CancelButton.Visibility == Visibility.Visible)
+                    {
+                        Result = MessageBoxResult.Cancel;
+                        DialogResult = false;
+                        Close();
+                    }
+                    break;
+            }
         }
 
         private void SetupButtons(MessageBoxButton buttons)
         {
+            // Reset all buttons to not be default first
+            OkButton.IsDefault = false;
+            YesButton.IsDefault = false;
+            NoButton.IsDefault = false;
+            CancelButton.IsDefault = false;
+
             switch (buttons)
             {
                 case MessageBoxButton.OK:
                     OkButton.Visibility = Visibility.Visible;
+                    OkButton.IsDefault = true;
                     break;
                 case MessageBoxButton.OKCancel:
                     OkButton.Visibility = Visibility.Visible;
                     CancelButton.Visibility = Visibility.Visible;
+                    OkButton.IsDefault = true;
                     break;
                 case MessageBoxButton.YesNo:
                     YesButton.Visibility = Visibility.Visible;
                     NoButton.Visibility = Visibility.Visible;
+                    YesButton.IsDefault = true;
                     break;
                 case MessageBoxButton.YesNoCancel:
                     YesButton.Visibility = Visibility.Visible;
                     NoButton.Visibility = Visibility.Visible;
                     CancelButton.Visibility = Visibility.Visible;
+                    YesButton.IsDefault = true;
                     break;
             }
         }
@@ -236,7 +298,7 @@ namespace StandardLicensingGenerator.Views
             msgBox.SetupButtons(buttons);
             msgBox.SetCustomImage(customImage);
 
-            // Show dialog
+            // Show dialog and make sure proper button is focused
             msgBox.ShowDialog();
             return msgBox.Result;
         }

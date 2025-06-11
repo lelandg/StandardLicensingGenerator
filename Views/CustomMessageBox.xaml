@@ -26,7 +26,9 @@
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
                                 CornerRadius="4">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center" 
+                                              RecognizesAccessKey="True" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -91,24 +93,24 @@
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right">
             <Button x:Name="YesButton" 
-                    Content="Yes" 
+                    Content="_Yes" 
                     Click="YesButton_Click" 
                     Style="{StaticResource MessageBoxButton}"
                     IsDefault="True"
                     Visibility="Collapsed"/>
             <Button x:Name="NoButton" 
-                    Content="No" 
+                    Content="_No" 
                     Click="NoButton_Click" 
                     Style="{StaticResource MessageBoxButton}"
                     Visibility="Collapsed"/>
             <Button x:Name="OkButton" 
-                    Content="OK" 
+                    Content="_OK" 
                     Click="OkButton_Click" 
                     Style="{StaticResource MessageBoxButton}"
                     IsDefault="True"
                     Visibility="Collapsed"/>
             <Button x:Name="CancelButton" 
-                    Content="Cancel" 
+                    Content="_Cancel" 
                     Click="CancelButton_Click" 
                     Style="{StaticResource MessageBoxButton}"
                     IsCancel="True"
