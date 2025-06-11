@@ -8,19 +8,30 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Key Size:" VerticalAlignment="Center"/>
-        <ComboBox x:Name="KeySizeBox" Grid.Row="0" Margin="70,0,0,0" Width="100">
-            <ComboBoxItem Content="2048"/>
-            <ComboBoxItem Content="3072"/>
-            <ComboBoxItem Content="4096"/>
-        </ComboBox>
-        <Button Content="Generate Key Pair" Grid.Row="1" Margin="0,10,0,0" Width="150" Click="GenerateKeyPair_Click"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="90" Width="Auto"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Key Size:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            <ComboBox x:Name="KeySizeBox" Grid.Row="0" Grid.Column="1" Margin="10,0,0,0" Width="100" HorizontalAlignment="Left">
+                <ComboBoxItem Content="2048"/>
+                <ComboBoxItem Content="3072"/>
+                <ComboBoxItem Content="4096"/>
+            </ComboBox>
+        </Grid>
+        <Button Content="Generate Key Pair" Grid.Row="1" Margin="0,10,0,0" Width="150" Click="GenerateKeyPair_Click" Padding="5"/>
         <TextBox x:Name="ResultBox" Grid.Row="2" Margin="0,10,0,0" Height="Auto" IsReadOnly="True" TextWrapping="Wrap"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="Save Private Key" Margin="0,0,10,0" Click="SavePrivateKey_Click"/>
-            <Button Content="Save Public Key" Margin="0,0,10,0" Click="SavePublicKey_Click"/>
-            <Button x:Name="InsertButton" Content="Insert" IsEnabled="False" Click="InsertButton_Click"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <Button Content="Save Private Key" Margin="0,0,10,0" Click="SavePrivateKey_Click" Padding="5"/>
+            <Button Content="Save Public Key" Margin="0,0,10,0" Click="SavePublicKey_Click" Padding="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+            <Button x:Name="InsertButton" Content="_Insert" IsEnabled="False" Click="InsertButton_Click" Margin="0,10,10,0" Padding="5"/>
+            <Button x:Name="CopyButton" Content="_Copy to Clipboard" IsEnabled="False" Click="CopyButton_Click" Margin="10,10,0,0" Padding="5"
+                    ToolTip="Copy private key file name to keyboard. Works across sessions."/>
         </StackPanel>
     </Grid>
 </Window>

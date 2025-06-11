@@ -191,6 +191,17 @@ public partial class MainWindow
             }
 
             privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
+
+            // Use ImportFromPem to validate the key format first
+            try {
+                using var rsa = System.Security.Cryptography.RSA.Create();
+                rsa.ImportFromPem(privateKeyPemString);
+            } catch (Exception keyEx) {
+                MessageBox.Show($"Private key format error: {keyEx.Message}", "Invalid Key Format", MessageBoxButton.OK, MessageBoxImage.Error);
+                ResultBox.Text = $"Key Format Error:\n{privateKeyPemString}\n\nError: {keyEx.Message}";
+                return;
+            }
+
             var base64Key = KeyFormatUtility.GetBase64Key(privateKeyPemString);
 
             var license = builder.CreateAndSignWithPrivateKey(base64Key, null);

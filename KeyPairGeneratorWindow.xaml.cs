@@ -9,6 +9,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 using StandardLicensingGenerator.UiSettings;
+using System.Threading.Tasks;
 
 namespace StandardLicensingGenerator;
 
@@ -18,16 +19,30 @@ public partial class KeyPairGeneratorWindow
     private string? _privateKeyPath;
     private string? _publicKeyPath;
     private readonly WindowSettingsManager _settingsManager;
+    private const string SuccessPrefix = "Private key saved to";
 
     public KeyPairGeneratorWindow()
     {
         InitializeComponent();
         _settingsManager = new WindowSettingsManager(this);
+        _privateKeyPath = null;
+        _publicKeyPath = null;
+        Task.Delay(20).ContinueWith(_ => Dispatcher.Invoke(ProcessResultText));
         KeySizeBox.SelectedIndex = 0;
         Closing += On_Closing;
         PreviewKeyDown += On_KeyDown;
     }
-    
+
+    private void ProcessResultText()
+    {
+        var texts = ResultBox.Text.Split('\n');
+        if (texts.Length > 1 && texts[0] == SuccessPrefix)
+        {
+            _privateKeyPath = texts[1];
+            CopyButton.IsEnabled = true;
+        }
+    }
+
     private void On_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape)
@@ -75,7 +90,7 @@ public partial class KeyPairGeneratorWindow
             pemWriter.WriteObject(_keyPair.Private);
             File.WriteAllText(dlg.FileName, stringWriter.ToString());
 
-            ResultBox.Text = $"Private key saved to {dlg.FileName}";
+            ResultBox.Text = $"{SuccessPrefix}\n{dlg.FileName}";
             _privateKeyPath = dlg.FileName;
             CheckEnableInsert();
         }
@@ -113,5 +128,13 @@ public partial class KeyPairGeneratorWindow
         InsertedPrivateKeyPath = _privateKeyPath;
         DialogResult = true;
         Close();
+    }
+
+    private void CopyButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_privateKeyPath != null) // should never be null, but never too careful! 
+        {
+            Clipboard.SetText(_privateKeyPath);
+        }
     }
 }

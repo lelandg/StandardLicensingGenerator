@@ -69,9 +69,23 @@ public static class KeyFormatUtility
     /// <returns>PEM string in PKCS#8 format</returns>
     public static string NormalizePrivateKey(string pemKey)
     {
-        if (!pemKey.Contains("BEGIN RSA PRIVATE KEY"))
+        // Check if it's already in PKCS#8 format
+        if (pemKey.Contains("BEGIN PRIVATE KEY"))
         {
             return pemKey;
+        }
+
+        // If not in RSA format, try to validate it first
+        if (!pemKey.Contains("BEGIN RSA PRIVATE KEY"))
+        {
+            try {
+                using var rsa = System.Security.Cryptography.RSA.Create();
+                rsa.ImportFromPem(pemKey);
+                // If we got here, the key is valid but in an unexpected format
+                return pemKey;
+            } catch {
+                // Continue with normal processing
+            }
         }
 
         using var reader = new StringReader(pemKey);
@@ -220,5 +234,19 @@ public static class KeyFormatUtility
                 return false;
         }
         return true;
+    }
+    
+    public static bool IsValidPrivateKey(string pemKey)
+    {
+        try
+        {
+            using var rsa = RSA.Create();
+            rsa.ImportFromPem(pemKey.ToCharArray());
+            return true; // valid PEM key
+        }
+        catch (Exception)
+        {
+            return false; // invalid PEM key
+        }
     }
 }
