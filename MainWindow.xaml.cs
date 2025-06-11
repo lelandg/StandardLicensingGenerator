@@ -75,6 +75,12 @@ public partial class MainWindow
     private string? _passPhrase;
     private bool _showPassword;
 
+    // Store previous form values when switching license types
+    private string? _previousCustomerName;
+    private string? _previousCustomerEmail;
+    private string? _previousAttributes;
+    private DateTime? _previousExpirationDate;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -87,11 +93,72 @@ public partial class MainWindow
         ShowPasswordButton.Content = "S_how";
         PreviewKeyDown += On_KeyDown;
         Closing += On_Closing;
+
+        // Set up license type change handler
+        LicenseTypeBox.SelectionChanged += LicenseTypeBox_SelectionChanged;
     }
 
     private void On_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         _settingsManager.Save();
+    }
+
+    private void LicenseTypeBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (LicenseTypeBox.SelectedItem is ComboBoxItem selectedItem)
+        {
+            string licenseType = selectedItem.Content.ToString() ?? "";
+
+            if (licenseType == "Trial")
+            {
+                // Switching to Trial - store current values
+                StoreStandardLicenseValues();
+
+                // Set default trial values
+                SetTrialLicenseDefaults();
+            }
+            else if (licenseType == "Standard" && _previousCustomerName != null)
+            {
+                // Switching back to Standard - restore previous values
+                RestoreStandardLicenseValues();
+            }
+        }
+    }
+
+    private void StoreStandardLicenseValues()
+    {
+        // Store current values before switching to Trial
+        _previousCustomerName = CustomerNameBox.Text;
+        _previousCustomerEmail = CustomerEmailBox.Text;
+        _previousAttributes = AttributesBox.Text;
+        _previousExpirationDate = ExpirationPicker.SelectedDate;
+    }
+
+    private void SetTrialLicenseDefaults()
+    {
+        // Set default values for Trial license
+        CustomerNameBox.Text = "Trial User";
+        CustomerEmailBox.Text = "trial@example.com";
+        AttributesBox.Text = "{\"TrialMode\": \"true\", \"MaxUsers\": \"1\"}";
+
+        // Set expiration date to 30 days from now
+        ExpirationPicker.SelectedDate = DateTime.Now.AddDays(30);
+    }
+
+    private void RestoreStandardLicenseValues()
+    {
+        // Restore previous values when switching back to Standard
+        if (_previousCustomerName != null)
+            CustomerNameBox.Text = _previousCustomerName;
+
+        if (_previousCustomerEmail != null)
+            CustomerEmailBox.Text = _previousCustomerEmail;
+
+        if (_previousAttributes != null)
+            AttributesBox.Text = _previousAttributes;
+
+        if (_previousExpirationDate.HasValue)
+            ExpirationPicker.SelectedDate = _previousExpirationDate;
     }
 
     private void On_KeyDown(object sender, KeyEventArgs e)
