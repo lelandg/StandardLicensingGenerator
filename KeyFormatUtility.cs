@@ -1,10 +1,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Pkcs;
 
 namespace StandardLicensingGenerator;
 
@@ -24,36 +20,22 @@ public static class KeyFormatUtility
             return pemKey;
         }
 
-        // If not in RSA format, try to validate it first
-        if (!pemKey.Contains("BEGIN RSA PRIVATE KEY"))
-        {
-            try {
-                using var rsa = System.Security.Cryptography.RSA.Create();
-                rsa.ImportFromPem(pemKey);
-                // If we got here, the key is valid but in an unexpected format
-                return pemKey;
-            } catch {
-                // Continue with normal processing
-            }
+        // Try to import using built-in .NET functionality
+        try {
+            using var rsa = RSA.Create();
+            rsa.ImportFromPem(pemKey);
+
+            // Export as PKCS#8
+            using var ms = new MemoryStream();
+            using var sw = new StreamWriter(ms);
+            sw.Write(rsa.ExportPkcs8PrivateKeyPem());
+            sw.Flush();
+            ms.Position = 0;
+            using var sr = new StreamReader(ms);
+            return sr.ReadToEnd();
+        } catch (Exception ex) {
+            throw new ArgumentException($"Could not convert key format: {ex.Message}", nameof(pemKey), ex);
         }
-
-        using var reader = new StringReader(pemKey);
-        var pemReader = new PemReader(reader);
-        var obj = pemReader.ReadObject();
-
-        AsymmetricKeyParameter keyParameter = obj switch
-        {
-            AsymmetricCipherKeyPair pair => pair.Private,
-            AsymmetricKeyParameter param => param,
-            _ => throw new ArgumentException("Unsupported RSA private key format", nameof(pemKey))
-        };
-
-        var privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(keyParameter);
-
-        using var stringWriter = new StringWriter();
-        var pemWriter = new PemWriter(stringWriter);
-        pemWriter.WriteObject(privateKeyInfo);
-        return stringWriter.ToString();
     }
 
     /// <summary>

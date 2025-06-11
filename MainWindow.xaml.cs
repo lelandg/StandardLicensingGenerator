@@ -72,7 +72,7 @@ public static class RsaExtensions
 public partial class MainWindow
 {
     private readonly WindowSettingsManager _settingsManager;
-    private string _passPhrase;
+    private string? _passPhrase;
     private bool _showPassword;
 
     public MainWindow()
@@ -168,14 +168,20 @@ public partial class MainWindow
                 MessageBox.Show("Select a valid expiration date.");
                 return;
             }
-            // privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
+
+            // Normalize the key using .NET functionality if needed
+            if (!privateKeyPemString.Contains("BEGIN PRIVATE KEY") && privateKeyPemString.Contains("BEGIN RSA PRIVATE KEY"))
+            {
+                privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
+            }
 
             var license = License.New()  
                 .WithUniqueIdentifier(Guid.NewGuid())
                 .As(((ComboBoxItem)LicenseTypeBox.SelectedItem).Content.ToString() switch
                 {
                     "Trial" => LicenseType.Trial,
-                    "Standard" => LicenseType.Standard
+                    "Standard" => LicenseType.Standard,
+                    _ => LicenseType.Trial
                 })
                 .ExpiresAt((DateTime)ExpirationPicker.SelectedDate!)
                 .WithMaximumUtilization(5)

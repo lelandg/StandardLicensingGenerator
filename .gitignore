@@ -1,3 +1,5 @@
+*.lic
+*.key
 *.msi
 obj/
 .claude/

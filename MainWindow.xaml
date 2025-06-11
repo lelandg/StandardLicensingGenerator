@@ -59,7 +59,7 @@
                     <ComboBox x:Name="LicenseTypeBox" Grid.Row="2" Grid.Column="1" Margin="0,2">
                         <ComboBoxItem Content="Standard"/>
                         <ComboBoxItem Content="Trial"/>
-                        <ComboBoxItem Content="Custom"/>
+                        <!-- <ComboBoxItem Content="Custom"/> TODO -->
                     </ComboBox>
 
                     <TextBlock Text="Expiration Date:" Grid.Row="3" Grid.Column="0" Margin="0,2"/>
