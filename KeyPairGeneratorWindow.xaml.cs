@@ -84,7 +84,7 @@ public partial class KeyPairGeneratorWindow
     {
         if (_keyPair == null)
         {
-            MessageBox.Show("Generate a key pair first.");
+            Views.CustomMessageBox.Show(this, "Generate a key pair first.", "Action Required", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         var dlg = new Microsoft.Win32.SaveFileDialog
@@ -105,7 +105,7 @@ public partial class KeyPairGeneratorWindow
     {
         if (_keyPair == null)
         {
-            MessageBox.Show("Generate a key pair first.");
+            Views.CustomMessageBox.Show(this, "Generate a key pair first.", "Action Required", MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         var dlg = new Microsoft.Win32.SaveFileDialog

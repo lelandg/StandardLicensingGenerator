@@ -1,0 +1,11 @@
+To use custom icons instead of system icons, add the following files to the Resources folder:
+
+- error.png
+- warning.png
+- info.png
+- question.png
+
+Recommended size: 32x32 pixels with a transparent background.
+
+When these files are present, the CustomMessageBox will use them instead of system icons.
+If the files are not found, it will automatically fall back to system icons.

@@ -99,7 +99,7 @@ public partial class MainWindow
         switch (e.Key)
         {
             case Key.Escape:
-                var result = MessageBox.Show(
+                var result = Views.CustomMessageBox.Show(
                     this,
                     "Do you want to exit the application?",
                     "Exit",
@@ -136,7 +136,7 @@ public partial class MainWindow
     {
         if (!File.Exists(KeyFileBox.Text))
         {
-            MessageBox.Show("Select a valid private key file.");
+            Views.CustomMessageBox.Show(this, "Select a valid private key file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
@@ -154,7 +154,7 @@ public partial class MainWindow
             }
             catch
             {
-                MessageBox.Show("Invalid JSON in additional attributes.");
+                Views.CustomMessageBox.Show(this, "Invalid JSON in additional attributes.", "Invalid Format", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
         }
@@ -165,7 +165,7 @@ public partial class MainWindow
             string keyFormat = Path.GetExtension(KeyFileBox.Text).ToLowerInvariant();
             if (ExpirationPicker.SelectedDate == null)
             {
-                MessageBox.Show("Select a valid expiration date.");
+                Views.CustomMessageBox.Show(this, "Select a valid expiration date.", "Missing Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -198,7 +198,8 @@ public partial class MainWindow
         }
         catch (ArgumentException argEx) when (argEx.Message.Contains("Bad sequence size"))
         {
-            MessageBox.Show(
+            Views.CustomMessageBox.Show(
+                this,
                 "The selected private key appears to be encrypted with a passphrase. " +
                 "This tool currently supports only unencrypted keys.",
                 "Unsupported Key",
@@ -211,7 +212,7 @@ public partial class MainWindow
         catch (Exception ex)
         {
             string errorSummary = $"Error generating license: {ex.Message}";
-            MessageBox.Show(errorSummary, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Views.CustomMessageBox.Show(this, errorSummary, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
             // Log detailed exception info for troubleshooting
             string detailedInfo = GetDetailedExceptionInfo(ex);

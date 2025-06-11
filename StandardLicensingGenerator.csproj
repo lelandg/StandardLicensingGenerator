@@ -12,7 +12,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Standard.Licensing" Version="1.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Resources\error.png" />
+      <Resource Include="Resources\info.png" />
+      <Resource Include="Resources\question.png" />
+      <Resource Include="Resources\warning.png" />
     </ItemGroup>
 
 </Project>
