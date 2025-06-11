@@ -1,0 +1,59 @@
+<Window x:Class="StandardLicensingGenerator.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About Standard Licensing Generator" Height="300" Width="500" 
+        MinWidth="425" MinHeight="340"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5"
+        ResizeMode="CanResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2E75B6" Padding="15">
+            <TextBlock Text="About Standard Licensing Generator" 
+                       FontSize="20" FontWeight="SemiBold" 
+                       Foreground="White"/>
+        </Border>
+
+        <!-- Content -->
+        <StackPanel Grid.Row="1" Margin="20">
+            <TextBlock Text="Standard Licensing Generator" 
+                       FontSize="16" FontWeight="SemiBold" 
+                       Margin="0,0,0,10"/>
+
+            <Grid Margin="0,5,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Version: " FontWeight="SemiBold" Margin="0,0,5,5"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" x:Name="VersionText" Text="1.0.0" Margin="0,0,0,5"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Build: " FontWeight="SemiBold" Margin="0,0,5,0"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="BuildText" Text="1.0.0.0" Margin="0"/>
+            </Grid>
+
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                A Windows desktop tool for generating licenses compatible with the Standard.Licensing library.
+            </TextBlock>
+
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                This tool allows you to create, sign, and save license files that can be validated in your applications.
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Footer with OK button -->
+        <Button Grid.Row="2" Content="OK" Width="80" Height="25" Margin="0,0,0,15" 
+                Click="OkButton_Click" IsDefault="True"/>
+    </Grid>
+</Window>

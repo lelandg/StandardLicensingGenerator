@@ -35,7 +35,7 @@ public partial class KeyPairGeneratorWindow
         Closing += On_Closing;
         PreviewKeyDown += On_KeyDown;
 
-        // Ensure password TextBox is hidden and PasswordBox is visible on window load
+        // Ensure the password TextBox is hidden and PasswordBox is visible on window loads
         PasswordTextBox.Visibility = Visibility.Collapsed;
         PasswordBox.Visibility = Visibility.Visible;
     }

@@ -5,7 +5,8 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using Standard.Licensing;
 using StandardLicensingGenerator.UiSettings;
-using System.Text; // Added for StringBuilder
+using System.Text;
+using System.Windows.Controls; // Added for StringBuilder
 
 namespace StandardLicensingGenerator;
 
@@ -50,17 +51,17 @@ public static class RsaExtensions
 
         var sb = new StringBuilder();
         sb.Append("<RSAKeyValue>");
-        sb.Append("<Modulus>" + Convert.ToBase64String(parameters.Modulus ?? Array.Empty<byte>()) + "</Modulus>");
-        sb.Append("<Exponent>" + Convert.ToBase64String(parameters.Exponent ?? Array.Empty<byte>()) + "</Exponent>");
+        sb.Append("<Modulus>" + Convert.ToBase64String(parameters.Modulus ?? []) + "</Modulus>");
+        sb.Append("<Exponent>" + Convert.ToBase64String(parameters.Exponent ?? []) + "</Exponent>");
 
         if (includePrivateParameters)
         {
-            sb.Append("<P>" + Convert.ToBase64String(parameters.P ?? Array.Empty<byte>()) + "</P>");
-            sb.Append("<Q>" + Convert.ToBase64String(parameters.Q ?? Array.Empty<byte>()) + "</Q>");
-            sb.Append("<DP>" + Convert.ToBase64String(parameters.DP ?? Array.Empty<byte>()) + "</DP>");
-            sb.Append("<DQ>" + Convert.ToBase64String(parameters.DQ ?? Array.Empty<byte>()) + "</DQ>");
-            sb.Append("<InverseQ>" + Convert.ToBase64String(parameters.InverseQ ?? Array.Empty<byte>()) + "</InverseQ>");
-            sb.Append("<D>" + Convert.ToBase64String(parameters.D ?? Array.Empty<byte>()) + "</D>");
+            sb.Append("<P>" + Convert.ToBase64String(parameters.P ?? []) + "</P>");
+            sb.Append("<Q>" + Convert.ToBase64String(parameters.Q ?? []) + "</Q>");
+            sb.Append("<DP>" + Convert.ToBase64String(parameters.DP ?? []) + "</DP>");
+            sb.Append("<DQ>" + Convert.ToBase64String(parameters.DQ ?? []) + "</DQ>");
+            sb.Append("<InverseQ>" + Convert.ToBase64String(parameters.InverseQ ?? []) + "</InverseQ>");
+            sb.Append("<D>" + Convert.ToBase64String(parameters.D ?? []) + "</D>");
         }
 
         sb.Append("</RSAKeyValue>");
@@ -70,12 +71,20 @@ public static class RsaExtensions
 
 public partial class MainWindow
 {
-    private readonly WindowSettingsManager _settingsManager; 
+    private readonly WindowSettingsManager _settingsManager;
+    private string _passPhrase;
+    private bool _showPassword;
+
     public MainWindow()
     {
         InitializeComponent();
         LicenseTypeBox.SelectedIndex = 0;
         _settingsManager = new WindowSettingsManager(this);
+        _showPassword = false;
+        // Ensure the password TextBox is hidden and PasswordBox is visible on window loads
+        PasswordTextBox.Visibility = Visibility.Collapsed;
+        PasswordBox.Visibility = Visibility.Visible;
+        ShowPasswordButton.Content = "S_how";
         PreviewKeyDown += On_KeyDown;
         Closing += On_Closing;
     }
@@ -150,61 +159,35 @@ public partial class MainWindow
             }
         }
 
-        var builder = License.New()
-            .WithUniqueIdentifier(Guid.NewGuid())
-            .LicensedTo(CustomerNameBox.Text, CustomerEmailBox.Text)
-            .ExpiresAt(ExpirationPicker.SelectedDate ?? DateTime.MaxValue)
-            .WithProductFeatures(f =>
-            {
-                f.Add("Product", ProductNameBox.Text);
-                f.Add("Version", VersionBox.Text);
-            })
-            .WithAdditionalAttributes(a =>
-            {
-                foreach (var kvp in attributes)
-                    a.Add(kvp.Key, kvp.Value);
-            });
-
         try
         {
             string privateKeyPemString = File.ReadAllText(KeyFileBox.Text);
             string keyFormat = Path.GetExtension(KeyFileBox.Text).ToLowerInvariant();
-
-            if (keyFormat == ".xml")
+            if (ExpirationPicker.SelectedDate == null)
             {
-                try
-                {
-                    privateKeyPemString = KeyFormatUtility.ConvertXmlToPem(privateKeyPemString);
-                }
-                catch (Exception xmlEx)
-                {
-                    MessageBox.Show($"Error processing XML key file: {xmlEx.Message}\n\nPlease ensure your XML key file is correctly formatted. You can also use a PEM key directly.",
-                        "Key Format Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-            }
-            else if (keyFormat != ".pem")
-            {
-                MessageBox.Show("Unsupported key file format. Please use a .pem or .xml file.",
-                    "Invalid Key Format", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Select a valid expiration date.");
                 return;
             }
+            // privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
 
-            privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
+            var license = License.New()  
+                .WithUniqueIdentifier(Guid.NewGuid())
+                .As(((ComboBoxItem)LicenseTypeBox.SelectedItem).Content.ToString() switch
+                {
+                    "Trial" => LicenseType.Trial,
+                    "Standard" => LicenseType.Standard
+                })
+                .ExpiresAt((DateTime)ExpirationPicker.SelectedDate!)
+                .WithMaximumUtilization(5)
+                // .WithProductFeatures(new Dictionary<string, string>  
+                // {  
+                //     {"Sales Module", "yes"},
+                //     {"Purchase Module", "yes"},  
+                //     {"Maximum Transactions", "10000"}  
+                // })  
+                .LicensedTo(CustomerNameBox.Text, CustomerEmailBox.Text)  
+                .CreateAndSignWithPrivateKey(privateKeyPemString, PasswordBox.Password);
 
-            // Use ImportFromPem to validate the key format first
-            try {
-                using var rsa = System.Security.Cryptography.RSA.Create();
-                rsa.ImportFromPem(privateKeyPemString);
-            } catch (Exception keyEx) {
-                MessageBox.Show($"Private key format error: {keyEx.Message}", "Invalid Key Format", MessageBoxButton.OK, MessageBoxImage.Error);
-                ResultBox.Text = $"Key Format Error:\n{privateKeyPemString}\n\nError: {keyEx.Message}";
-                return;
-            }
-
-            var base64Key = KeyFormatUtility.GetBase64Key(privateKeyPemString);
-
-            var license = builder.CreateAndSignWithPrivateKey(base64Key, null);
             ResultBox.Text = license.ToString();
         }
         catch (ArgumentException argEx) when (argEx.Message.Contains("Bad sequence size"))
@@ -253,6 +236,12 @@ public partial class MainWindow
         help.ShowDialog();
     }
 
+    private void ShowAbout_Click(object sender, RoutedEventArgs e)
+    {
+        var about = new AboutWindow { Owner = this };
+        about.ShowDialog();
+    }
+
     private void OpenKeyPairGenerator_Click(object sender, RoutedEventArgs e)
     {
         var keyPairWindow = new KeyPairGeneratorWindow { Owner = this };
@@ -286,5 +275,63 @@ public partial class MainWindow
     private void CopyResultToClipboard_Click(object sender, RoutedEventArgs e)
     {
         Clipboard.SetText(ResultBox.Text);
+    }
+    private void ShowPasswordButton_Click(object sender, RoutedEventArgs e)
+    {
+        _showPassword = !_showPassword;
+
+        if (_showPassword)
+        {
+            // Make sure text box has the current password value before showing it
+            if (PasswordTextBox.Text != PasswordBox.Password)
+            {
+                PasswordTextBox.Text = PasswordBox.Password;
+            }
+
+            // Show text box, hide password box
+            PasswordBox.Visibility = Visibility.Collapsed;
+            PasswordTextBox.Visibility = Visibility.Visible;
+            PasswordTextBox.Focus();
+            PasswordTextBox.SelectionStart = PasswordTextBox.Text.Length; // Position cursor at end
+        }
+        else
+        {
+            // Make sure password box has the current text value before showing it
+            if (PasswordBox.Password != PasswordTextBox.Text)
+            {
+                PasswordBox.Password = PasswordTextBox.Text;
+            }
+
+            // Show password box, hide text box
+            PasswordTextBox.Visibility = Visibility.Collapsed;
+            PasswordBox.Visibility = Visibility.Visible;
+            PasswordBox.Focus();
+        }
+    }
+
+    private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+    {
+        // Always keep the text box in sync with the password box
+        // This ensures both fields have the value when toggling visibility
+        if (PasswordTextBox.Text != PasswordBox.Password)
+        {
+            PasswordTextBox.Text = PasswordBox.Password;
+        }
+
+        // Update the passphrase when the password changes
+        _passPhrase = PasswordBox.Password;
+    }
+
+    private void PasswordTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        // Always keep the password box in sync with the text box
+        // This ensures both fields have the value when toggling visibility
+        if (PasswordBox.Password != PasswordTextBox.Text)
+        {
+            PasswordBox.Password = PasswordTextBox.Text;
+        }
+
+        // Update the passphrase when the text changes
+        _passPhrase = PasswordTextBox.Text;
     }
 }

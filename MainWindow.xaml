@@ -3,10 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StandardLicensingGenerator"
+        xmlns:standardLicensingGenerator="clr-namespace:StandardLicensingGenerator"
         mc:Ignorable="d"
         Title="Standard Licensing Generator" Height="650" Width="800" MinHeight="475" MinWidth="475"
         WindowStyle="SingleBorderWindow" ResizeMode="CanResize">
+    <Window.Resources>
+        <standardLicensingGenerator:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
@@ -14,7 +17,10 @@
                 <Separator />
                 <MenuItem Header="Exit" Click="Exit_Click" />
             </MenuItem>
-            <MenuItem Header="_Help" Click="ShowHelp_Click" />
+            <MenuItem Header="_Help">
+                <MenuItem Header="Help _Contents (F1)" Click="ShowHelp_Click" />
+                <MenuItem Header="_About" Click="ShowAbout_Click" />
+            </MenuItem>
         </Menu>
         <Grid Margin="15">
             <Grid.RowDefinitions>
@@ -85,8 +91,12 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <PasswordBox x:Name="PasswordBox" Grid.Column="0" Margin="0,0,5,0"/>
-                        <ToggleButton x:Name="ShowPasswordButton" Grid.Column="1" Content="S_how" Padding="5" Margin="5,0,0,0"/>
+                        <PasswordBox x:Name="PasswordBox" Grid.Column="0" Margin="0,0,10,0" 
+                                     PasswordChanged="PasswordBox_PasswordChanged"/>
+
+                        <TextBox x:Name="PasswordTextBox" Grid.Column="0" Margin="0,0,10,0" 
+                                 TextChanged="PasswordTextBox_TextChanged"/>
+                        <Button x:Name="ShowPasswordButton" Grid.Column="1" Content="Sho_w" Padding="5" Click="ShowPasswordButton_Click"/>
                     </Grid>
                     <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Content="_Generate License" 
                             Margin="0,10,0,0" Width="150" Click="GenerateLicense_Click"  Padding="5"

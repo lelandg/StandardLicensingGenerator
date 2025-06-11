@@ -26,7 +26,7 @@ public class WindowSettingsManager
         string name = fileName ?? $"{_window.GetType().Name}.json";
         _filePath = Path.Combine(folder, name);
 
-        // If window is already loaded, scan controls immediately
+        // If the window is already loaded, scan controls immediately
         if (_window.IsLoaded)
         {
             ScanControls();
@@ -121,7 +121,7 @@ public class WindowSettingsManager
         }
     }
 
-    public void Load()
+    private void Load()
     {
         if (!File.Exists(_filePath))
             return;
