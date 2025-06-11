@@ -487,25 +487,28 @@ The StandardLicensingGenerator allows you to add custom attributes to your licen
 - **Usage Limits**: Set maximum allowed resources (users, projects, etc.)
 - **Custom Properties**: Store any license-specific configuration
 
-Example JSON attributes for different scenarios:
+**Example JSON attributes for different scenarios:**
 
+   * Enterprise Edition with module access
 ```json
-// Enterprise Edition with module access
 {
   "Edition": "Enterprise",
   "MaxUsers": "Unlimited", 
   "Modules": ["Reporting", "Administration", "Integration"]
 }
-
-// Professional Edition with limits
+```
+* Professional Edition with limits
+```json
 {
   "Edition": "Professional",
   "MaxUsers": "10",
   "Modules": ["Reporting", "Administration"],
   "StorageLimit": "50GB"
 }
+```
 
-// Basic Edition
+* Basic Edition
+```json
 {
   "Edition": "Basic",
   "MaxUsers": "3",
