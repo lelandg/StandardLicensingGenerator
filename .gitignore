@@ -1,5 +1,6 @@
 *.lic
 *.key
+*.pem
 *.msi
 obj/
 .claude/
