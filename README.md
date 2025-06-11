@@ -4,7 +4,7 @@ A Windows desktop tool for generating licenses compatible with the [Standard.Lic
 
 ## Features
 
-- Create **Standard**, **Trial**, and **Custom** license types
+- Create **Standard**, **Trial** license types
 - Set product name, version, and expiration date
 - Store customer information (name and email)
 - Add any additional attributes using JSON
