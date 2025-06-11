@@ -1,5 +1,158 @@
 # StandardLicensingGenerator
+# CustomMessageBox for WPF
 
+A modern, customizable WPF message box replacement that follows the same API pattern as the standard WPF MessageBox while offering enhanced styling and features.
+
+## Features
+
+- **Drop-in replacement** for the standard WPF MessageBox
+- **Modern UI** with customizable styling
+- **Custom icons** support
+- **Keyboard shortcuts** (Y/N/O/C keys and Esc)
+- **Owner window** association for proper modal behavior
+- **Consistent API** matching WPF's native MessageBox
+
+## Screenshot
+
+*[Add a screenshot of your CustomMessageBox here]*
+
+## Usage
+
+### Basic Usage
+
+The CustomMessageBox can be used just like the standard MessageBox:
+
+```csharp
+// Simple message
+CustomMessageBox.Show("Operation completed successfully.");
+
+// With caption
+CustomMessageBox.Show("Operation completed successfully.", "Success");
+
+// With buttons
+MessageBoxResult result = CustomMessageBox.Show(
+    "Do you want to save changes?", 
+    "Save Changes", 
+    MessageBoxButton.YesNo);
+
+// With buttons and icon
+MessageBoxResult result = CustomMessageBox.Show(
+    "Changes could not be saved.", 
+    "Error", 
+    MessageBoxButton.OK, 
+    MessageBoxImage.Error);
+
+// With owner window for proper modal behavior
+MessageBoxResult result = CustomMessageBox.Show(
+    this,  // owner window
+    "Do you want to proceed?", 
+    "Confirmation", 
+    MessageBoxButton.YesNoCancel, 
+    MessageBoxImage.Question);
+
+// With default result
+MessageBoxResult result = CustomMessageBox.Show(
+    this,
+    "Do you want to save changes?",
+    "Save Changes", 
+    MessageBoxButton.YesNoCancel, 
+    MessageBoxImage.Warning,
+    MessageBoxResult.Yes);  // default is 'Yes'
+```
+
+### Using Custom Icons
+
+You can use custom icons instead of system icons by adding these image files to your Resources folder:
+
+- `error.png`
+- `warning.png`
+- `info.png`
+- `question.png`
+
+Recommended size: 32x32 pixels with a transparent background.
+
+When these files are present, the CustomMessageBox will use them instead of system icons. If not found, it will automatically fall back to system icons.
+
+### Using a Custom Image
+
+You can also use any custom image as an icon:
+
+```csharp
+// Create a custom image source
+BitmapImage customImage = new BitmapImage(new Uri("pack://application:,,,/Resources/custom-icon.png"));
+
+// Show message box with custom image
+MessageBoxResult result = CustomMessageBox.ShowWithImage(
+    this,  // owner window
+    "This is a message with a custom icon.",
+    "Custom Icon", 
+    MessageBoxButton.OKCancel, 
+    customImage);
+```
+
+## Installation
+
+### Option 1: Add files to your project
+
+1. Copy these files to your project:
+   - `CustomMessageBox.xaml` and `CustomMessageBox.xaml.cs`
+   - `SystemIconExtensions.cs`
+
+2. Update the namespace in the files to match your project
+
+### Option 2: Add as a reference
+
+If using the component across multiple projects:
+
+1. Create a separate Class Library project
+2. Add the files to that project
+3. Reference the library from your WPF applications
+
+## Customization
+
+### Styling
+
+You can customize the appearance by modifying the XAML in `CustomMessageBox.xaml`. The message box uses a clean, modern style with a light background and blue accent buttons by default.
+
+### Layout
+
+The layout uses a responsive grid that automatically resizes based on content while maintaining proper spacing and alignment.
+
+## Handling Results
+
+Process the result the same way you would with a standard MessageBox:
+
+```csharp
+MessageBoxResult result = CustomMessageBox.Show("Save changes?", "Confirm", MessageBoxButton.YesNoCancel);
+
+switch (result)
+{
+    case MessageBoxResult.Yes:
+        SaveChanges();
+        break;
+    case MessageBoxResult.No:
+        DiscardChanges();
+        break;
+    case MessageBoxResult.Cancel:
+        // User canceled the operation
+        break;
+}
+```
+
+## Keyboard Shortcuts
+
+The CustomMessageBox supports these keyboard shortcuts:
+
+- `Y` - Clicks the Yes button (when visible)
+- `N` - Clicks the No button (when visible)
+- `O` - Clicks the OK button (when visible)
+- `C` - Clicks the Cancel button (when visible)
+- `Esc` - Clicks Cancel or No button (based on which is visible)
+- `Enter` - Clicks the default button (typically Yes or OK)
+
+## License
+
+[Specify your license information here]
 A Windows desktop tool for generating licenses compatible with the [Standard.Licensing](https://github.com/dnauck/Standard.Licensing) library. The application lets you configure all available license options, sign them with your private key and save the result for distribution.
 
 ## Features
