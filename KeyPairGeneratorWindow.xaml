@@ -1,9 +1,14 @@
 <Window x:Class="StandardLicensingGenerator.KeyPairGeneratorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Key Pair Generator" Height="300" Width="300">
+        xmlns:standardLicensingGenerator="clr-namespace:StandardLicensingGenerator"
+        Title="Key Pair Generator" Height="300" Width="300" MinHeight="300" MinWidth="300">
+    <Window.Resources>
+        <standardLicensingGenerator:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -22,17 +27,34 @@
                 <ComboBoxItem Content="4096"/>
             </ComboBox>
         </Grid>
-        <Button Content="Generate Key Pair" Grid.Row="1" Margin="0,10,0,0" Width="150" Click="GenerateKeyPair_Click" Padding="5"/>
-        <TextBox x:Name="ResultBox" Grid.Row="2" Margin="0,10,0,0" Height="Auto" IsReadOnly="True" TextWrapping="Wrap"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-            <Button Content="Save Private Key" Margin="0,0,10,0" Click="SavePrivateKey_Click" Padding="5"/>
-            <Button Content="Save Public Key" Margin="0,0,10,0" Click="SavePublicKey_Click" Padding="5"/>
+        <Button Content="_Generate Key Pair" Grid.Row="1" Margin="0,10,0,0" Width="150" Click="GenerateKeyPair_Click" Padding="5"/>
+        
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="60" Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Password:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            
+            <PasswordBox x:Name="PasswordBox" Grid.Column="1" Margin="10,0,10,0" 
+                         PasswordChanged="PasswordBox_PasswordChanged"/>
+
+            <TextBox x:Name="PasswordTextBox" Grid.Column="1" Margin="10,0,10,0" 
+                     TextChanged="PasswordTextBox_TextChanged"/>
+             
+            <Button Content="S_how" Grid.Column="2" Padding="5" Click="ShowPasswordButton_Click"/>
+        </Grid>
+
+        <TextBox x:Name="ResultBox" Grid.Row="3" Margin="0,10,0,0" Height="Auto" IsReadOnly="True" TextWrapping="Wrap"/>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <Button Content="Save P_rivate Key" Margin="0,0,10,0" Click="SavePrivateKey_Click" Padding="5"/>
+            <Button Content="Save P_ublic Key" Margin="0,0,10,0" Click="SavePublicKey_Click" Padding="5"/>
         </StackPanel>
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
             <Button x:Name="InsertButton" Content="_Insert" IsEnabled="False" Click="InsertButton_Click" Margin="0,10,10,0" Padding="5"/>
             <Button x:Name="CopyButton" Content="_Copy to Clipboard" IsEnabled="False" Click="CopyButton_Click" Margin="10,10,0,0" Padding="5"
                     ToolTip="Copy private key file name to keyboard. Works across sessions."/>
         </StackPanel>
     </Grid>
 </Window>
-

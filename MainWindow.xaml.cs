@@ -249,19 +249,21 @@ public partial class MainWindow
 
     private void ShowHelp_Click(object sender, RoutedEventArgs e)
     {
-        var help = new HelpWindow();
-        help.Owner = this;
+        var help = new HelpWindow { Owner = this };
         help.ShowDialog();
     }
 
     private void OpenKeyPairGenerator_Click(object sender, RoutedEventArgs e)
     {
-        var keyPairWindow = new KeyPairGeneratorWindow();
-        keyPairWindow.Owner = this;
+        var keyPairWindow = new KeyPairGeneratorWindow { Owner = this };
         bool? ok = keyPairWindow.ShowDialog();
         if (ok == true)
         {
-            if (keyPairWindow.InsertedPrivateKeyPath != null) KeyFileBox.Text = keyPairWindow.InsertedPrivateKeyPath;
+            if (keyPairWindow.InsertedPrivateKeyPath != null)
+            {
+                KeyFileBox.Text = keyPairWindow.InsertedPrivateKeyPath;
+                PasswordBox.Password = keyPairWindow.Password ?? "";
+            }
         }
     }
 
