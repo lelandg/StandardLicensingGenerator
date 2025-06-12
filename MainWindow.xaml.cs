@@ -11,63 +11,6 @@ using System.Windows.Controls; // Added for StringBuilder
 namespace StandardLicensingGenerator;
 
 // Extension methods for XML key format compatibility
-public static class RsaExtensions
-{
-    public static void FromXmlString(this System.Security.Cryptography.RSA rsa, string xmlString)
-    {
-        var parameters = new System.Security.Cryptography.RSAParameters();
-        var xmlDoc = new System.Xml.XmlDocument();
-        xmlDoc.LoadXml(xmlString);
-
-        if (xmlDoc.DocumentElement == null) throw new ArgumentException("Invalid XML format", nameof(xmlString));
-
-        if (xmlDoc.DocumentElement.Name.Equals("RSAKeyValue"))
-        {
-            foreach (System.Xml.XmlNode node in xmlDoc.DocumentElement.ChildNodes)
-            {
-                switch (node.Name)
-                {
-                    case "Modulus": parameters.Modulus = Convert.FromBase64String(node.InnerText); break;
-                    case "Exponent": parameters.Exponent = Convert.FromBase64String(node.InnerText); break;
-                    case "P": parameters.P = Convert.FromBase64String(node.InnerText); break;
-                    case "Q": parameters.Q = Convert.FromBase64String(node.InnerText); break;
-                    case "DP": parameters.DP = Convert.FromBase64String(node.InnerText); break;
-                    case "DQ": parameters.DQ = Convert.FromBase64String(node.InnerText); break;
-                    case "InverseQ": parameters.InverseQ = Convert.FromBase64String(node.InnerText); break;
-                    case "D": parameters.D = Convert.FromBase64String(node.InnerText); break;
-                }
-            }
-            rsa.ImportParameters(parameters);
-        }
-        else
-        {
-            throw new ArgumentException("Invalid XML format", nameof(xmlString));
-        }
-    }
-
-    public static string ToXmlString(this System.Security.Cryptography.RSA rsa, bool includePrivateParameters)
-    {
-        var parameters = rsa.ExportParameters(includePrivateParameters);
-
-        var sb = new StringBuilder();
-        sb.Append("<RSAKeyValue>");
-        sb.Append("<Modulus>" + Convert.ToBase64String(parameters.Modulus ?? []) + "</Modulus>");
-        sb.Append("<Exponent>" + Convert.ToBase64String(parameters.Exponent ?? []) + "</Exponent>");
-
-        if (includePrivateParameters)
-        {
-            sb.Append("<P>" + Convert.ToBase64String(parameters.P ?? []) + "</P>");
-            sb.Append("<Q>" + Convert.ToBase64String(parameters.Q ?? []) + "</Q>");
-            sb.Append("<DP>" + Convert.ToBase64String(parameters.DP ?? []) + "</DP>");
-            sb.Append("<DQ>" + Convert.ToBase64String(parameters.DQ ?? []) + "</DQ>");
-            sb.Append("<InverseQ>" + Convert.ToBase64String(parameters.InverseQ ?? []) + "</InverseQ>");
-            sb.Append("<D>" + Convert.ToBase64String(parameters.D ?? []) + "</D>");
-        }
-
-        sb.Append("</RSAKeyValue>");
-        return sb.ToString();
-    }
-}
 
 public partial class MainWindow
 {
