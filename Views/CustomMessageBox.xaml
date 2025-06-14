@@ -5,20 +5,27 @@
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        MinWidth="320"
-        MaxWidth="640"
-        MinHeight="180"
+        Width="320"
+        Height="180"
         Background="#F5F5F5"
         ShowInTaskbar="False"
         WindowStyle="None">
     <Window.Resources>
+        <!-- Dynamic color resources that will be set from the generator -->
+        <SolidColorBrush x:Key="MessageBoxButtonBackground" Color="#2E75B6" />
+        <SolidColorBrush x:Key="MessageBoxButtonHoverBackground" Color="#3E85C6" />
+        <SolidColorBrush x:Key="MessageBoxButtonPressedBackground" Color="#1E65A6" />
+        <SolidColorBrush x:Key="MessageBoxButtonDisabledBackground" Color="#CCCCCC" />
+        <SolidColorBrush x:Key="MessageBoxButtonForeground" Color="White" />
+        <SolidColorBrush x:Key="MessageBoxButtonDisabledForeground" Color="#888888" />
+
         <Style x:Key="MessageBoxButton" TargetType="Button">
             <Setter Property="Margin" Value="8,0,0,0" />
             <Setter Property="MinWidth" Value="86" />
             <Setter Property="Height" Value="32" />
             <Setter Property="Padding" Value="8,0" />
-            <Setter Property="Background" Value="#2E75B6" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource MessageBoxButtonBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource MessageBoxButtonForeground}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -33,14 +40,14 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#3E85C6" />
+                                <Setter Property="Background" Value="{DynamicResource MessageBoxButtonHoverBackground}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#1E65A6" />
+                                <Setter Property="Background" Value="{DynamicResource MessageBoxButtonPressedBackground}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#CCCCCC" />
-                                <Setter Property="Foreground" Value="#888888" />
+                                <Setter Property="Background" Value="{DynamicResource MessageBoxButtonDisabledBackground}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MessageBoxButtonDisabledForeground}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -49,8 +56,8 @@
         </Style>
     </Window.Resources>
 
-    <Border BorderBrush="CornflowerBlue" BorderThickness="1">
-        <Grid Margin="16">
+    <Border x:Name="BorderBrush" BorderThickness="1">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -61,50 +68,32 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Icon -->
-            <Image x:Name="MessageIcon" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" 
-                   Width="45" Height="45" Margin="0,0,16,0" VerticalAlignment="Center"/>
-
             <!-- Message Title -->
-            <TextBlock x:Name="MessageTitle" HorizontalAlignment="Center" 
+            <TextBlock x:Name="MessageTitle" HorizontalAlignment="Stretch" TextAlignment="Left"
+                       Background="#2E75B6" Foreground="White" 
                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
-                       FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"
-                       Margin="0,0,0,8"/>
+                       FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"
+                       Margin="0" Padding="16,5,16,5"/>
+            <!-- Icon -->
+            <Image x:Name="MessageIcon" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" 
+                   Width="45" Height="45" Margin="16,0,16,0" VerticalAlignment="Center"/>
 
             <!-- Message Content -->
             <TextBlock x:Name="MessageText" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap"
-                       VerticalAlignment="Center" Margin="0,0,0,16"/>
+                       VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Margin="16"/>
 
             <!-- Buttons -->
-            <StackPanel Grid.Row="2" 
-                        Grid.Column="0" 
-                        Grid.ColumnSpan="2" 
-                        Orientation="Horizontal" 
-                        HorizontalAlignment="Right">
-                <Button x:Name="YesButton" 
-                        Content="_Yes" 
-                        Click="YesButton_Click" 
-                        Style="{StaticResource MessageBoxButton}"
-                        IsDefault="True"
-                        Visibility="Collapsed"/>
-                <Button x:Name="NoButton" 
-                        Content="_No" 
-                        Click="NoButton_Click" 
-                        Style="{StaticResource MessageBoxButton}"
-                        Visibility="Collapsed"/>
-                <Button x:Name="OkButton" 
-                        Content="_OK" 
-                        Click="OkButton_Click" 
-                        Style="{StaticResource MessageBoxButton}"
-                        IsDefault="True"
-                        Visibility="Collapsed"/>
-                <Button x:Name="CancelButton" 
-                        Content="_Cancel" 
-                        Click="CancelButton_Click" 
-                        Style="{StaticResource MessageBoxButton}"
-                        IsCancel="True"
-                        Visibility="Collapsed"/>
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" 
+                        HorizontalAlignment="Center" Margin="16,0,16,16">
+                <Button x:Name="YesButton" Content="_Yes" Click="YesButton_Click" 
+                        Style="{StaticResource MessageBoxButton}" IsDefault="True" Visibility="Collapsed"/>
+                <Button x:Name="NoButton" Content="_No" Click="NoButton_Click" 
+                        Style="{StaticResource MessageBoxButton}" Visibility="Collapsed"/>
+                <Button x:Name="OkButton" Content="_OK" Click="OkButton_Click" 
+                        Style="{StaticResource MessageBoxButton}" IsDefault="True" Visibility="Collapsed"/>
+                <Button x:Name="CancelButton" Content="_Cancel" Click="CancelButton_Click" 
+                        Style="{StaticResource MessageBoxButton}" IsCancel="True" Visibility="Collapsed"/>
             </StackPanel>
         </Grid>
-    </Border>
+        </Border>
 </Window>
