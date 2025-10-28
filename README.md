@@ -12,7 +12,7 @@ Keypair Generator
 ## License
 
 [Specify your license information here]
-A Windows desktop tool for generating licenses compatible with the [Standard.Licensing](https://github.com/dnauck/Standard.Licensing) library. The application lets you configure all available license options, sign them with your private key and save the result for distribution.
+A Windows desktop tool for generating licenses compatible with the [Standard.Licensing](https://github.com/junian/Standard.Licensing) library. The application lets you configure all available license options, sign them with your private key and save the result for distribution.
 
 ## Features
 
