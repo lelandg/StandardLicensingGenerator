@@ -203,7 +203,7 @@ public partial class MainWindow
                 })
                 .ExpiresAt((DateTime)ExpirationPicker.SelectedDate!)
                 .WithMaximumUtilization(5)
-                .WithProductFeatures(attributes)
+                .WithAdditionalAttributes(attributes)
                 .LicensedTo(CustomerNameBox.Text, CustomerEmailBox.Text)  
                 .CreateAndSignWithPrivateKey(privateKeyPemString, PasswordBox.Password);
 
