@@ -16,7 +16,8 @@ namespace StandardLicensingGenerator
 
         public static IDictionary<string, string> FlattenJsonToDictionary(JToken token)
         {
-            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            // JSON keys are case-sensitive; Standard.Licensing reads attributes back case-sensitively.
+            var result = new Dictionary<string, string>();
             Flatten(token, path: "", result);
             return result;
         }
@@ -29,7 +30,7 @@ namespace StandardLicensingGenerator
                     foreach (var prop in (JObject)token)
                     {
                         var childPath = AppendPath(path, prop.Key);
-                        Flatten(prop.Value, childPath, output);
+                        Flatten(prop.Value ?? JValue.CreateNull(), childPath, output);
                     }
                     break;
 
@@ -75,7 +76,7 @@ namespace StandardLicensingGenerator
                         return Convert.ToString(jv.Value, CultureInfo.InvariantCulture) ?? string.Empty;
 
                     case JTokenType.Boolean:
-                        return ((bool)jv.Value).ToString(CultureInfo.InvariantCulture).ToLowerInvariant();
+                        return jv.Value is bool b && b ? "true" : "false";
 
                     case JTokenType.Date:
                         if (jv.Value is DateTime dt)

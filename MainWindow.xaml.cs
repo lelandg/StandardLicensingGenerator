@@ -150,25 +150,31 @@ public partial class MainWindow
             return;
         }
 
-
-        var attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var attributes = new Dictionary<string, string>();
 
         if (!string.IsNullOrWhiteSpace(AttributesBox.Text))
         {
             try
             {
-                var token = JToken.Parse(AttributesBox.Text);
+                JToken token;
+                // DateParseHandling.None keeps date-like strings verbatim in the signed license.
+                using (var reader = new JsonTextReader(new StringReader(AttributesBox.Text)) { DateParseHandling = DateParseHandling.None })
+                {
+                    token = JToken.ReadFrom(reader);
+                    if (reader.Read())
+                        throw new JsonReaderException("Additional text found after the JSON value.");
+                }
 
                 foreach (var kv in JsonHelper.FlattenJsonToDictionary(token))
                 {
                     attributes[kv.Key] = kv.Value;
                 }
             }
-            catch (Newtonsoft.Json.JsonException ex)
+            catch (JsonException ex)
             {
                 Views.CustomMessageBox.Show(
                     this,
-                    "Invalid JSON in additional attributes.",
+                    $"Invalid JSON in additional attributes: {ex.Message}",
                     "Invalid Format",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning
