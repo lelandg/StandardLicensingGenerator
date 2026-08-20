@@ -151,20 +151,24 @@ public partial class MainWindow
         }
 
 
-        var attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var attributes = new Dictionary<string, string>();
 
         if (!string.IsNullOrWhiteSpace(AttributesBox.Text))
         {
             try
             {
-                var token = JToken.Parse(AttributesBox.Text);
+                using var reader = new JsonTextReader(new StringReader(AttributesBox.Text))
+                {
+                    DateParseHandling = DateParseHandling.None
+                };
+                var token = JToken.Load(reader);
 
                 foreach (var kv in JsonHelper.FlattenJsonToDictionary(token))
                 {
                     attributes[kv.Key] = kv.Value;
                 }
             }
-            catch (Newtonsoft.Json.JsonException ex)
+            catch (Newtonsoft.Json.JsonException)
             {
                 Views.CustomMessageBox.Show(
                     this,

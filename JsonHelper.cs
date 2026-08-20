@@ -3,9 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StandardLicensingGenerator
 {
@@ -16,7 +13,7 @@ namespace StandardLicensingGenerator
 
         public static IDictionary<string, string> FlattenJsonToDictionary(JToken token)
         {
-            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var result = new Dictionary<string, string>();
             Flatten(token, path: "", result);
             return result;
         }
