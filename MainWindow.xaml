@@ -1,25 +1,41 @@
-<Window x:Class="StandardLicensingGenerator.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:standardLicensingGenerator="clr-namespace:StandardLicensingGenerator"
-        mc:Ignorable="d"
-        Title="Standard Licensing Generator" Height="650" Width="800" MinHeight="475" MinWidth="475"
-        WindowStyle="SingleBorderWindow" ResizeMode="CanResize">
-    <Window.Resources>
-        <standardLicensingGenerator:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-    </Window.Resources>
+<mah:MetroWindow
+    x:Class="StandardLicensingGenerator.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:mahicon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:standardLicensingGenerator="clr-namespace:StandardLicensingGenerator"
+    Title="Standard Licensing Generator"
+    Width="800"
+    Height="650"
+    MinWidth="475"
+    MinHeight="475"
+    ResizeMode="CanResize"
+    ShowIconOnTitleBar="True"
+    WindowStyle="SingleBorderWindow"
+    mc:Ignorable="d">
+    <mah:MetroWindow.LeftWindowCommands>
+        <mah:WindowCommands>
+            <Button Click="LaunchMahAppsOnGitHub" ToolTip="MahApps.Metro on GitHub">
+                <mahicon:PackIconMaterial
+                    Width="22"
+                    Height="22"
+                    Kind="Github" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.LeftWindowCommands>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="Save License" Click="SaveLicense_Click" />
+                <MenuItem Click="SaveLicense_Click" Header="Save License" />
                 <Separator />
-                <MenuItem Header="Exit" Click="Exit_Click" />
+                <MenuItem Click="Exit_Click" Header="Exit" />
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="Help _Contents (F1)" Click="ShowHelp_Click" />
-                <MenuItem Header="_About" Click="ShowAbout_Click" />
+                <MenuItem Click="ShowHelp_Click" Header="Help _Contents (F1)" />
+                <MenuItem Click="ShowAbout_Click" Header="_About" />
             </MenuItem>
         </Menu>
         <Grid Margin="15">
@@ -28,9 +44,13 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <!-- Form contents -->
+            <!--  Form contents  -->
             <StackPanel Grid.Row="0">
-                <TextBlock Text="License Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock
+                    Margin="0,0,0,10"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="License Details" />
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -49,82 +69,202 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Product Name:" Grid.Row="0" Grid.Column="0" Margin="0,2"/>
-                    <TextBox x:Name="ProductNameBox" Grid.Row="0" Grid.Column="1" Margin="0,2"/>
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Product Name:" />
+                    <TextBox
+                        x:Name="ProductNameBox"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="0,2" />
 
-                    <TextBlock Text="Version:" Grid.Row="1" Grid.Column="0" Margin="0,2"/>
-                    <TextBox x:Name="VersionBox" Grid.Row="1" Grid.Column="1" Margin="0,2"/>
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Version:" />
+                    <TextBox
+                        x:Name="VersionBox"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,2" />
 
-                    <TextBlock Text="License Type:" Grid.Row="2" Grid.Column="0" Margin="0,2"/>
-                    <ComboBox x:Name="LicenseTypeBox" Grid.Row="2" Grid.Column="1" Margin="0,2">
-                        <ComboBoxItem Content="Standard"/>
-                        <ComboBoxItem Content="Trial"/>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="License Type:" />
+                    <ComboBox
+                        x:Name="LicenseTypeBox"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="0,2">
+                        <ComboBoxItem Content="Standard" />
+                        <ComboBoxItem Content="Trial" />
                         <!-- <ComboBoxItem Content="Custom"/> TODO -->
                     </ComboBox>
 
-                    <TextBlock Text="Expiration Date:" Grid.Row="3" Grid.Column="0" Margin="0,2"/>
-                    <DatePicker x:Name="ExpirationPicker" Grid.Row="3" Grid.Column="1" Margin="0,2"/>
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Expiration Date:" />
+                    <DatePicker
+                        x:Name="ExpirationPicker"
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Margin="0,2" />
 
-                    <TextBlock Text="Customer Name:" Grid.Row="4" Grid.Column="0" Margin="0,2"/>
-                    <TextBox x:Name="CustomerNameBox" Grid.Row="4" Grid.Column="1" Margin="0,2"/>
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Customer Name:" />
+                    <TextBox
+                        x:Name="CustomerNameBox"
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Margin="0,2" />
 
-                    <TextBlock Text="Customer Email:" Grid.Row="5" Grid.Column="0" Margin="0,2"/>
-                    <TextBox x:Name="CustomerEmailBox" Grid.Row="5" Grid.Column="1" Margin="0,2"/>
+                    <TextBlock
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Customer Email:" />
+                    <TextBox
+                        x:Name="CustomerEmailBox"
+                        Grid.Row="5"
+                        Grid.Column="1"
+                        Margin="0,2" />
 
-                    <TextBlock Text="Additional Attributes (json):" Grid.Row="6" Grid.Column="0" Margin="0,2"/>
-                    <TextBox x:Name="AttributesBox" Grid.Row="6" Grid.Column="1" Margin="0,2" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                    <TextBlock
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Additional Attributes (json):" />
+                    <TextBox
+                        x:Name="AttributesBox"
+                        Grid.Row="6"
+                        Grid.Column="1"
+                        Height="60"
+                        Margin="0,2"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap" />
 
-                    <TextBlock Text="Private Key File:" Grid.Row="7" Grid.Column="0" Margin="0,2"/>
-                    <Grid Grid.Row="7" Grid.Column="1" Margin="0,2">
+                    <TextBlock
+                        Grid.Row="7"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Private Key File:" />
+                    <Grid
+                        Grid.Row="7"
+                        Grid.Column="1"
+                        Margin="0,2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="KeyFileBox" Grid.Column="0" Margin="0,0,5,0"/>
-                        <Button Grid.Column="1" Content="_Browse" Click="BrowseKey_Click" Margin="5" Padding="5"/>
-                        <Button Grid.Column="2" Content="Generate Key _Pair" Click="OpenKeyPairGenerator_Click" Margin="5" Padding="5"/>
+                        <TextBox
+                            x:Name="KeyFileBox"
+                            Grid.Column="0"
+                            Margin="0,0,5,0" />
+                        <Button
+                            Grid.Column="1"
+                            Margin="5"
+                            Padding="5"
+                            Click="BrowseKey_Click"
+                            Content="_Browse" />
+                        <Button
+                            Grid.Column="2"
+                            Margin="5"
+                            Padding="5"
+                            Click="OpenKeyPairGenerator_Click"
+                            Content="Generate Key _Pair" />
                     </Grid>
-                    <TextBlock Text="Password:" Grid.Row="8" Grid.Column="0" Margin="0,2"/>
-                    <Grid Grid.Row="8" Grid.Column="1" Margin="0,2">
+                    <TextBlock
+                        Grid.Row="8"
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Password:" />
+                    <Grid
+                        Grid.Row="8"
+                        Grid.Column="1"
+                        Margin="0,2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <PasswordBox x:Name="PasswordBox" Grid.Column="0" Margin="0,0,10,0" 
-                                     PasswordChanged="PasswordBox_PasswordChanged"/>
+                        <PasswordBox
+                            x:Name="PasswordBox"
+                            Grid.Column="0"
+                            Margin="0,0,10,0"
+                            PasswordChanged="PasswordBox_PasswordChanged" />
 
-                        <TextBox x:Name="PasswordTextBox" Grid.Column="0" Margin="0,0,10,0" 
-                                 TextChanged="PasswordTextBox_TextChanged"/>
-                        <Button x:Name="ShowPasswordButton" Grid.Column="1" Content="Sho_w" Padding="5" Click="ShowPasswordButton_Click"/>
+                        <TextBox
+                            x:Name="PasswordTextBox"
+                            Grid.Column="0"
+                            Margin="0,0,10,0"
+                            TextChanged="PasswordTextBox_TextChanged" />
+                        <Button
+                            x:Name="ShowPasswordButton"
+                            Grid.Column="1"
+                            Padding="5"
+                            Click="ShowPasswordButton_Click"
+                            Content="Sho_w" />
                     </Grid>
-                    <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Content="_Generate License" 
-                            Margin="0,10,0,0" Width="150" Click="GenerateLicense_Click"  Padding="5"
-                            HorizontalContentAlignment="Center" IsDefault="True"/>
+                    <Button
+                        Grid.Row="9"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Width="150"
+                        Margin="0,10,0,0"
+                        Padding="5"
+                        HorizontalContentAlignment="Center"
+                        Click="GenerateLicense_Click"
+                        Content="_Generate License"
+                        IsDefault="True" />
                 </Grid>
             </StackPanel>
-            <!-- ResultBox -->
-            <TextBox x:Name="ResultBox" 
-                     Grid.Row="1"
-                     Margin="0,10,0,0"
-                     IsReadOnly="True"
-                     TextWrapping="Wrap"
-                     AcceptsReturn="True"
-                     VerticalScrollBarVisibility="Auto"
-                     VerticalAlignment="Stretch"/>
+            <!--  ResultBox  -->
+            <TextBox
+                x:Name="ResultBox"
+                Grid.Row="1"
+                Margin="0,10,0,0"
+                VerticalAlignment="Stretch"
+                AcceptsReturn="True"
+                IsReadOnly="True"
+                TextWrapping="Wrap"
+                VerticalScrollBarVisibility="Auto" />
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="170"></ColumnDefinition>
-                    <ColumnDefinition Width="170"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="170" />
+                    <ColumnDefinition Width="170" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="1" Content="_Save License" Click="SaveLicense_Click" Margin="0,10,0,0" Width="150" Padding="5" HorizontalContentAlignment="Center"></Button>
-                <Button Grid.Column="2" Content="_Copy to Clipboard" Click="CopyResultToClipboard_Click" Margin="0,10,0,0" Width="150" Padding="5" HorizontalContentAlignment="Center"></Button>
+                <Button
+                    Grid.Column="1"
+                    Width="150"
+                    Margin="0,10,0,0"
+                    Padding="5"
+                    HorizontalContentAlignment="Center"
+                    Click="SaveLicense_Click"
+                    Content="_Save License" />
+                <Button
+                    Grid.Column="2"
+                    Width="150"
+                    Margin="0,10,0,0"
+                    Padding="5"
+                    HorizontalContentAlignment="Center"
+                    Click="CopyResultToClipboard_Click"
+                    Content="_Copy to Clipboard" />
             </Grid>
         </Grid>
     </DockPanel>
-</Window>
+</mah:MetroWindow>
