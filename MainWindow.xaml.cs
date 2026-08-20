@@ -354,7 +354,7 @@ public partial class MainWindow : MetroWindow
         _passPhrase = PasswordTextBox.Text;
     }
 
-    private void LaunchMahAppsOnGitHub(object sender, RoutedEventArgs e)
+    private void LaunchProjectOnGitHub(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
         {

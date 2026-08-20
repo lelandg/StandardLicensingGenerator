@@ -9,7 +9,7 @@
     MinWidth="425"
     MinHeight="340"
     Background="#F5F5F5"
-    ResizeMode="NoResize"
+    ResizeMode="CanResize"
     WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>

@@ -7,7 +7,7 @@
     Width="800"
     Height="600"
     Background="#F5F5F5"
-    ResizeMode="NoResize"
+    ResizeMode="CanResize"
     WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
@@ -87,11 +87,11 @@
                             Browse to select your RSA private key file (PEM or XML format).</TextBlock>
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">6.</Run>
-                            Click<Run FontWeight="SemiBold">Generate License</Run>
+                            Click <Run FontWeight="SemiBold">Generate License</Run>
                             to create the license.</TextBlock>
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">7.</Run>
-                            Use<Run FontWeight="SemiBold">File → Save License</Run>
+                            Use <Run FontWeight="SemiBold">File → Save License</Run>
                             to store the license as a .lic file.</TextBlock>
                     </StackPanel>
                 </Border>
