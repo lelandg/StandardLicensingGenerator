@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-21
+
+### Added
+- Custom attributes from the "Additional Attributes" JSON box are now included in generated licenses. Nested JSON is flattened to colon-separated keys, for example `items:2:name`. (#9, contributed by @Teo230)
+- `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` instruction files for AI coding agents.
+
+### Changed
+- The application now targets .NET 10 (`net10.0-windows`). .NET 9 left support in May 2026.
+- Attribute values are preserved exactly as typed: date-like strings are not rewritten, and keys are case-sensitive.
+- The invalid-JSON dialog now includes the parser's error message.
+
+### Removed
+- Redundant `System.Drawing.Common` package reference; the .NET 10 desktop framework provides it.
+
 ## [1.0.3] - 2025-06-11
 
 ### Changed
