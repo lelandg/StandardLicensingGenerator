@@ -5,10 +5,11 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 using Standard.Licensing.Security.Cryptography;
 using StandardLicensingGenerator.UiSettings;
+using MahApps.Metro.Controls;
 
 namespace StandardLicensingGenerator;
 
-public partial class KeyPairGeneratorWindow
+public partial class KeyPairGeneratorWindow : MetroWindow
 {
     private string? _privateKeyPath;
     private string? _publicKeyPath;

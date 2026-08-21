@@ -1,7 +1,8 @@
-<Window
+<mah:MetroWindow
     x:Class="StandardLicensingGenerator.Views.CustomMessageBox"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     Title="Message"
     Width="320"
     Height="180"
@@ -11,8 +12,10 @@
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
     WindowStyle="None">
-    <Window.Resources>
-        <!--  Dynamic color resources that will be set from the generator  -->
+    <!--<mah:MetroWindow.Resources>
+    -->
+    <!--  Dynamic color resources that will be set from the generator  -->
+    <!--
         <SolidColorBrush x:Key="MessageBoxButtonBackground" Color="#2E75B6" />
         <SolidColorBrush x:Key="MessageBoxButtonHoverBackground" Color="#3E85C6" />
         <SolidColorBrush x:Key="MessageBoxButtonPressedBackground" Color="#1E65A6" />
@@ -57,12 +60,12 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Window.Resources>
+    </mah:MetroWindow.Resources>-->
 
     <Border x:Name="BorderBrush" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <!--<RowDefinition Height="Auto" />-->
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -72,7 +75,7 @@
             </Grid.ColumnDefinitions>
 
             <!--  Message Title  -->
-            <TextBlock
+            <!--<TextBlock
                 x:Name="MessageTitle"
                 Grid.Row="0"
                 Grid.Column="0"
@@ -85,11 +88,11 @@
                 FontWeight="SemiBold"
                 Foreground="White"
                 TextAlignment="Left"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap" />-->
             <!--  Icon  -->
             <Image
                 x:Name="MessageIcon"
-                Grid.Row="1"
+                Grid.Row="0"
                 Grid.RowSpan="2"
                 Grid.Column="0"
                 Width="45"
@@ -100,7 +103,7 @@
             <!--  Message Content  -->
             <TextBlock
                 x:Name="MessageText"
-                Grid.Row="1"
+                Grid.Row="0"
                 Grid.Column="1"
                 Margin="16"
                 HorizontalAlignment="Center"
@@ -110,39 +113,41 @@
 
             <!--  Buttons  -->
             <StackPanel
-                Grid.Row="2"
+                Grid.Row="1"
                 Grid.Column="1"
                 Margin="16,0,16,16"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Right"
                 Orientation="Horizontal">
                 <Button
                     x:Name="YesButton"
+                    Margin="0,0,5,0"
                     Click="YesButton_Click"
                     Content="_Yes"
                     IsDefault="True"
-                    Style="{StaticResource MessageBoxButton}"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs}"
                     Visibility="Collapsed" />
                 <Button
                     x:Name="NoButton"
                     Click="NoButton_Click"
                     Content="_No"
-                    Style="{StaticResource MessageBoxButton}"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}"
                     Visibility="Collapsed" />
                 <Button
                     x:Name="OkButton"
+                    Margin="0,0,5,0"
                     Click="OkButton_Click"
                     Content="_OK"
                     IsDefault="True"
-                    Style="{StaticResource MessageBoxButton}"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}"
                     Visibility="Collapsed" />
                 <Button
                     x:Name="CancelButton"
                     Click="CancelButton_Click"
                     Content="_Cancel"
                     IsCancel="True"
-                    Style="{StaticResource MessageBoxButton}"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}"
                     Visibility="Collapsed" />
             </StackPanel>
         </Grid>
     </Border>
-</Window>
+</mah:MetroWindow>

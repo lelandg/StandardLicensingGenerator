@@ -1,9 +1,10 @@
+using MahApps.Metro.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace StandardLicensingGenerator.Views;
-public partial class CustomMessageBox : Window
+public partial class CustomMessageBox : MetroWindow
 {
     // Store the current style for this instance
     private CustomMessageBoxStyle? _instanceStyle;
@@ -14,7 +15,7 @@ public partial class CustomMessageBox : Window
         KeyDown += CustomMessageBox_KeyDown;
 
         // Apply current style generator settings
-        ApplyGeneratorStyles();
+        // ApplyGeneratorStyles();
 
         // Handle window loaded to set focus on default button
         Loaded += CustomMessageBox_Loaded;
@@ -33,49 +34,50 @@ public partial class CustomMessageBox : Window
             CancelButton.Focus();
     }
 
-    private void ApplyGeneratorStyles()
-    {
-        var generator = MessageBoxStyleGenerator.Current;
+    //private void ApplyGeneratorStyles()
+    //{
+    //    var generator = MessageBoxStyleGenerator.Current;
 
-        // Apply colors from the generator
-        Background = generator.WindowBackground;
-        BorderBrush.BorderBrush = generator.BorderBrush;
-        MessageTitle.Background = generator.TitleBackground;
-        MessageTitle.Foreground = generator.TitleForeground;
+    //    // Apply colors from the generator
+    //    Background = generator.WindowBackground;
+    //    BorderBrush.BorderBrush = generator.BorderBrush;
+    //    MessageTitle.Background = generator.TitleBackground;
+    //    MessageTitle.Foreground = generator.TitleForeground;
 
-        // Update button style resources
-        Resources["MessageBoxButtonBackground"] = generator.ButtonBackground;
-        Resources["MessageBoxButtonHoverBackground"] = generator.ButtonHoverBackground;
-        Resources["MessageBoxButtonPressedBackground"] = generator.ButtonPressedBackground;
-        Resources["MessageBoxButtonDisabledBackground"] = generator.ButtonDisabledBackground;
-        Resources["MessageBoxButtonForeground"] = generator.ButtonForeground;
-        Resources["MessageBoxButtonDisabledForeground"] = generator.ButtonDisabledForeground;
-    }
+    //    // Update button style resources
+    //    Resources["MessageBoxButtonBackground"] = generator.ButtonBackground;
+    //    Resources["MessageBoxButtonHoverBackground"] = generator.ButtonHoverBackground;
+    //    Resources["MessageBoxButtonPressedBackground"] = generator.ButtonPressedBackground;
+    //    Resources["MessageBoxButtonDisabledBackground"] = generator.ButtonDisabledBackground;
+    //    Resources["MessageBoxButtonForeground"] = generator.ButtonForeground;
+    //    Resources["MessageBoxButtonDisabledForeground"] = generator.ButtonDisabledForeground;
+    //}
 
     /// <summary>
     /// Applies a custom style to this message box instance
     /// </summary>
     /// <param name="style">The style to apply</param>
-    public void ApplyStyle(CustomMessageBoxStyle style)
-    {
-        if (style == null) return;
+    //public void ApplyStyle(CustomMessageBoxStyle style)
+    //{
+    //    if (style == null) return;
 
-        _instanceStyle = style;
+    //    _instanceStyle = style;
 
-        // Apply each style property if it's not null
-        if (style.WindowBackground != null) Background = style.WindowBackground;
-        if (style.BorderBrush != null) BorderBrush.BorderBrush = style.BorderBrush;
-        if (style.TitleBackground != null) MessageTitle.Background = style.TitleBackground;
-        if (style.TitleForeground != null) MessageTitle.Foreground = style.TitleForeground;
+    //    // Apply each style property if it's not null
+    //    if (style.WindowBackground != null) Background = style.WindowBackground;
+    //    if (style.BorderBrush != null) BorderBrush.BorderBrush = style.BorderBrush;
+    //    if (style.TitleBackground != null) MessageTitle.Background = style.TitleBackground;
+    //    if (style.TitleForeground != null) MessageTitle.Foreground = style.TitleForeground;
 
-        // Update button style resources only for non-null properties
-        if (style.ButtonBackground != null) Resources["MessageBoxButtonBackground"] = style.ButtonBackground;
-        if (style.ButtonHoverBackground != null) Resources["MessageBoxButtonHoverBackground"] = style.ButtonHoverBackground;
-        if (style.ButtonPressedBackground != null) Resources["MessageBoxButtonPressedBackground"] = style.ButtonPressedBackground;
-        if (style.ButtonDisabledBackground != null) Resources["MessageBoxButtonDisabledBackground"] = style.ButtonDisabledBackground;
-        if (style.ButtonForeground != null) Resources["MessageBoxButtonForeground"] = style.ButtonForeground;
-        if (style.ButtonDisabledForeground != null) Resources["MessageBoxButtonDisabledForeground"] = style.ButtonDisabledForeground;
-    }
+    //    // Update button style resources only for non-null properties
+    //    if (style.ButtonBackground != null) Resources["MessageBoxButtonBackground"] = style.ButtonBackground;
+    //    if (style.ButtonHoverBackground != null) Resources["MessageBoxButtonHoverBackground"] = style.ButtonHoverBackground;
+    //    if (style.ButtonPressedBackground != null) Resources["MessageBoxButtonPressedBackground"] = style.ButtonPressedBackground;
+    //    if (style.ButtonDisabledBackground != null) Resources["MessageBoxButtonDisabledBackground"] = style.ButtonDisabledBackground;
+    //    if (style.ButtonForeground != null) Resources["MessageBoxButtonForeground"] = style.ButtonForeground;
+    //    if (style.ButtonDisabledForeground != null) Resources["MessageBoxButtonDisabledForeground"] = style.ButtonDisabledForeground;
+    //}
+
     private void CustomMessageBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
         // Skip if Alt is pressed - this is handled by WPF's built-in access key system
@@ -418,12 +420,7 @@ public partial class CustomMessageBox : Window
             Owner = owner,
             // Set default result based on parameter
             Result = defaultResult,
-            MessageTitle =
-            {
-                // Set title and message text
-                Text = string.IsNullOrEmpty(caption) ? "" : caption,
-                Visibility = string.IsNullOrEmpty(caption) ? Visibility.Collapsed : Visibility.Visible
-            },
+            ShowTitleBar = !string.IsNullOrEmpty(caption),
             MessageText =
             {
                 Text = messageText
@@ -450,12 +447,7 @@ public partial class CustomMessageBox : Window
             Owner = owner,
             // Set default result based on parameter
             Result = defaultResult,
-            MessageTitle =
-            {
-                // Set title and message text
-                Text = string.IsNullOrEmpty(caption) ? "" : caption,
-                Visibility = string.IsNullOrEmpty(caption) ? Visibility.Collapsed : Visibility.Visible
-            },
+            ShowTitleBar = !string.IsNullOrEmpty(caption),
             MessageText =
             {
                 Text = messageText
@@ -467,7 +459,7 @@ public partial class CustomMessageBox : Window
         msgBox.SetIcon(icon);
 
         // Apply custom style
-        msgBox.ApplyStyle(style);
+        // msgBox.ApplyStyle(style);
 
         // Show dialog
         msgBox.ShowDialog();
@@ -485,12 +477,7 @@ public partial class CustomMessageBox : Window
             Owner = owner,
             // Set default result
             Result = defaultResult,
-            MessageTitle =
-            {
-                // Set title and message text
-                Text = string.IsNullOrEmpty(caption) ? "" : caption,
-                Visibility = string.IsNullOrEmpty(caption) ? Visibility.Collapsed : Visibility.Visible
-            },
+            ShowTitleBar = !string.IsNullOrEmpty(caption),
             MessageText =
             {
                 Text = messageText
@@ -518,12 +505,7 @@ public partial class CustomMessageBox : Window
             Owner = owner,
             // Set default result
             Result = defaultResult,
-            MessageTitle =
-            {
-                // Set title and message text
-                Text = string.IsNullOrEmpty(caption) ? "" : caption,
-                Visibility = string.IsNullOrEmpty(caption) ? Visibility.Collapsed : Visibility.Visible
-            },
+            ShowTitleBar = !string.IsNullOrEmpty(caption),
             MessageText =
             {
                 Text = messageText
@@ -535,7 +517,7 @@ public partial class CustomMessageBox : Window
         msgBox.SetCustomImage(customImage);
 
         // Apply custom style
-        msgBox.ApplyStyle(style);
+        // msgBox.ApplyStyle(style);
 
         // Show dialog
         msgBox.ShowDialog();
