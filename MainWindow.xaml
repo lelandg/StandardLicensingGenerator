@@ -14,7 +14,6 @@
     MinHeight="475"
     ResizeMode="CanResize"
     ShowIconOnTitleBar="True"
-    WindowStyle="SingleBorderWindow"
     mc:Ignorable="d">
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
