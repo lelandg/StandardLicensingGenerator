@@ -6,7 +6,7 @@
     Title="Help"
     Width="800"
     Height="600"
-    Background="#F5F5F5"
+    Background="{StaticResource MahApps.Brushes.ThemeBackground}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner">
     <Grid>
@@ -19,7 +19,7 @@
         <Border
             Grid.Row="0"
             Padding="15"
-            Background="#2E75B6">
+            Background="{StaticResource MahApps.Brushes.AccentBase}">
             <TextBlock
                 FontSize="24"
                 FontWeight="SemiBold"
@@ -46,7 +46,7 @@
                             Margin="0,0,0,10"
                             FontSize="18"
                             FontWeight="SemiBold"
-                            Foreground="#2E75B6"
+                            Foreground="{StaticResource MahApps.Brushes.AccentBase}"
                             Text="Overview" />
                         <TextBlock Margin="0,0,0,10" TextWrapping="Wrap">
                             This tool creates licenses compatible with the Standard.Licensing library. It allows you to generate,
@@ -68,7 +68,7 @@
                             Margin="0,0,0,10"
                             FontSize="18"
                             FontWeight="SemiBold"
-                            Foreground="#2E75B6"
+                            Foreground="{StaticResource MahApps.Brushes.AccentBase}"
                             Text="Basic Usage" />
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">1.</Run>
@@ -109,7 +109,7 @@
                             Margin="0,0,0,10"
                             FontSize="18"
                             FontWeight="SemiBold"
-                            Foreground="#2E75B6"
+                            Foreground="{StaticResource MahApps.Brushes.AccentBase}"
                             Text="License Types" />
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -180,7 +180,7 @@
                             Margin="0,0,0,10"
                             FontSize="18"
                             FontWeight="SemiBold"
-                            Foreground="#2E75B6"
+                            Foreground="{StaticResource MahApps.Brushes.AccentBase}"
                             Text="Keys and Security" />
                         <TextBlock Margin="0,0,0,10" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">Private Key:</Run>
@@ -208,7 +208,7 @@
                             Margin="0,0,0,10"
                             FontSize="18"
                             FontWeight="SemiBold"
-                            Foreground="#2E75B6"
+                            Foreground="{StaticResource MahApps.Brushes.AccentBase}"
                             Text="Implementation Tips" />
                         <TextBlock Margin="0,0,0,10" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">• License Validation:</Run>

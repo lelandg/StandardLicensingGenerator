@@ -8,7 +8,7 @@
     Height="300"
     MinWidth="425"
     MinHeight="340"
-    Background="#F5F5F5"
+    Background="{StaticResource MahApps.Brushes.ThemeBackground}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner">
     <Grid>
@@ -22,7 +22,7 @@
         <Border
             Grid.Row="0"
             Padding="15"
-            Background="#2E75B6">
+            Background="{StaticResource MahApps.Brushes.AccentBase}">
             <TextBlock
                 FontSize="20"
                 FontWeight="SemiBold"
