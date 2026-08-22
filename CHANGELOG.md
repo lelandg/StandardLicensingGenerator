@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-22
+
+### Added
+- New MahApps.Metro visual theme across the main, About, and Help windows, with a title-bar button that opens the project's GitHub page (contributed by @Teo230 in #12/#13).
+- `.slnx` solution file alongside the existing `.sln`.
+
+### Changed
+- All XAML reformatted to a consistent style; the message box outer border element was renamed to `OuterBorderBrush`.
+- New dependencies: MahApps.Metro 2.4.11 and MahApps.Metro.IconPacks.Material 6.2.1.
+
+### Fixed
+- Restored the rendered spaces before "Generate License" and "File → Save License" in the Help window text.
+- About and Help windows remain resizable (`CanResize`), matching their saved-size persistence.
+
 ## [1.1.0] - 2026-08-21
 
 ### Added
