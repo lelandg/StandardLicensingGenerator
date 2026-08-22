@@ -39,7 +39,7 @@ public partial class CustomMessageBox : Window
 
         // Apply colors from the generator
         Background = generator.WindowBackground;
-        BorderBrush.BorderBrush = generator.BorderBrush;
+        OuterBorderBrush.BorderBrush = generator.BorderBrush;
         MessageTitle.Background = generator.TitleBackground;
         MessageTitle.Foreground = generator.TitleForeground;
 
@@ -64,7 +64,7 @@ public partial class CustomMessageBox : Window
 
         // Apply each style property if it's not null
         if (style.WindowBackground != null) Background = style.WindowBackground;
-        if (style.BorderBrush != null) BorderBrush.BorderBrush = style.BorderBrush;
+        if (style.BorderBrush != null) OuterBorderBrush.BorderBrush = style.BorderBrush;
         if (style.TitleBackground != null) MessageTitle.Background = style.TitleBackground;
         if (style.TitleForeground != null) MessageTitle.Foreground = style.TitleForeground;
 
