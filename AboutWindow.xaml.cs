@@ -1,11 +1,12 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using MahApps.Metro.Controls;
 using StandardLicensingGenerator.UiSettings;
 
 namespace StandardLicensingGenerator;
 
-public partial class AboutWindow
+public partial class AboutWindow : MetroWindow
 {
     private readonly WindowSettingsManager _settingsManager;
 

@@ -1,19 +1,21 @@
+using MahApps.Metro.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Standard.Licensing;
 using StandardLicensingGenerator.UiSettings;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls; // Added for StringBuilder
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace StandardLicensingGenerator;
 
 // Extension methods for XML key format compatibility
 
-public partial class MainWindow
+public partial class MainWindow : MetroWindow
 {
     private readonly WindowSettingsManager _settingsManager;
     private string? _passPhrase;
@@ -359,5 +361,14 @@ public partial class MainWindow
 
         // Update the passphrase when the text changes
         _passPhrase = PasswordTextBox.Text;
+    }
+
+    private void LaunchProjectOnGitHub(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "https://github.com/lelandg/StandardLicensingGenerator",
+            UseShellExecute = true
+        });
     }
 }

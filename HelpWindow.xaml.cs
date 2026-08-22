@@ -1,10 +1,11 @@
 using System.Windows;
 using System.Windows.Input;
+using MahApps.Metro.Controls;
 using StandardLicensingGenerator.UiSettings;
 
 namespace StandardLicensingGenerator;
 
-public partial class HelpWindow
+public partial class HelpWindow : MetroWindow
 {
     private readonly WindowSettingsManager _settingsManager;
     public HelpWindow()
