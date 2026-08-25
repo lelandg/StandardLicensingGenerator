@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Standard Licensing Generator"
     Width="800"
-    Height="650"
+    Height="720"
     MinWidth="475"
     MinHeight="475"
     ResizeMode="CanResize"
