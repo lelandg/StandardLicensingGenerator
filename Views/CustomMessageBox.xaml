@@ -12,55 +12,6 @@
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
     WindowStyle="None">
-    <!--<mah:MetroWindow.Resources>
-    -->
-    <!--  Dynamic color resources that will be set from the generator  -->
-    <!--
-        <SolidColorBrush x:Key="MessageBoxButtonBackground" Color="#2E75B6" />
-        <SolidColorBrush x:Key="MessageBoxButtonHoverBackground" Color="#3E85C6" />
-        <SolidColorBrush x:Key="MessageBoxButtonPressedBackground" Color="#1E65A6" />
-        <SolidColorBrush x:Key="MessageBoxButtonDisabledBackground" Color="#CCCCCC" />
-        <SolidColorBrush x:Key="MessageBoxButtonForeground" Color="White" />
-        <SolidColorBrush x:Key="MessageBoxButtonDisabledForeground" Color="#888888" />
-
-        <Style x:Key="MessageBoxButton" TargetType="Button">
-            <Setter Property="Margin" Value="8,0,0,0" />
-            <Setter Property="MinWidth" Value="86" />
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Padding" Value="8,0" />
-            <Setter Property="Background" Value="{DynamicResource MessageBoxButtonBackground}" />
-            <Setter Property="Foreground" Value="{DynamicResource MessageBoxButtonForeground}" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
-                            <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                RecognizesAccessKey="True" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource MessageBoxButtonHoverBackground}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource MessageBoxButtonPressedBackground}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="{DynamicResource MessageBoxButtonDisabledBackground}" />
-                                <Setter Property="Foreground" Value="{DynamicResource MessageBoxButtonDisabledForeground}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </mah:MetroWindow.Resources>-->
 
     <Border x:Name="OuterBorderBrush" BorderThickness="1">
         <Grid>
@@ -74,21 +25,6 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!--  Message Title  -->
-            <!--<TextBlock
-                x:Name="MessageTitle"
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="0"
-                Padding="16,5,16,5"
-                HorizontalAlignment="Stretch"
-                Background="#2E75B6"
-                FontSize="12"
-                FontWeight="SemiBold"
-                Foreground="White"
-                TextAlignment="Left"
-                TextWrapping="Wrap" />-->
             <!--  Icon  -->
             <Image
                 x:Name="MessageIcon"

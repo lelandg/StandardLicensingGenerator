@@ -66,14 +66,14 @@ The generated license can then be validated in your application using the matchi
 
 ### Building with Visual Studio
 
-1. Open the solution file `StandardLicensingGenerator.sln` in Visual Studio 2022 or newer.
+1. Open the solution file `StandardLicensingGenerator.slnx` in Visual Studio 2022 or newer.
 2. Select the desired build configuration (Debug/Release).
 3. Build the solution using **Build > Build Solution** or press **Ctrl+Shift+B**.
 4. The compiled application will be available in the `bin/{Configuration}/net9.0-windows` directory.
 
 ### Building with JetBrains Rider
 
-1. Open the solution file `StandardLicensingGenerator.sln` in Rider.
+1. Open the solution file `StandardLicensingGenerator.slnx` in Rider.
 2. Select the desired build configuration from the dropdown in the toolbar.
 3. Build the solution by clicking the build icon or pressing **Ctrl+F9**.
 4. The compiled application will be available in the `bin/{Configuration}/net9.0-windows` directory.

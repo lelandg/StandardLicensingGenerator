@@ -6,7 +6,9 @@
     xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     Title="Key Pair Generator"
     Width="480"
-    Height="360">
+    Height="360"
+    MinWidth="300"
+    MinHeight="300">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

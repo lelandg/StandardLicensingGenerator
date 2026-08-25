@@ -5,7 +5,7 @@
     xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     Width="540"
     Height="405"
-    Background="{StaticResource MahApps.Brushes.ThemeBackground}"
+    Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterOwner">
     <Grid>
@@ -19,7 +19,7 @@
         <Border
             Grid.Row="0"
             Padding="15"
-            Background="{StaticResource MahApps.Brushes.Accent}">
+            Background="{DynamicResource MahApps.Brushes.Accent}">
             <TextBlock
                 FontSize="20"
                 FontWeight="SemiBold"
