@@ -8,6 +8,7 @@
     xmlns:mahicon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Standard Licensing Generator"
+    TitleAlignment="Center"
     Width="800"
     Height="720"
     MinWidth="475"

@@ -7,6 +7,7 @@
     Height="405"
     Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
     ResizeMode="NoResize"
+    ShowTitleBar="False"
     WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
@@ -19,11 +20,13 @@
         <Border
             Grid.Row="0"
             Padding="15"
-            Background="{DynamicResource MahApps.Brushes.Accent}">
+            Background="{DynamicResource MahApps.Brushes.Accent}"
+            MouseLeftButtonDown="Header_MouseLeftButtonDown">
             <TextBlock
                 FontSize="20"
                 FontWeight="SemiBold"
                 Foreground="White"
+                HorizontalAlignment="Center"
                 Text="About Standard Licensing Generator" />
         </Border>
 

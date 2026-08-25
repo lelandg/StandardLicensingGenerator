@@ -51,4 +51,13 @@ public partial class AboutWindow : MetroWindow
     {
         Close();
     }
+
+    // The title bar is collapsed (ShowTitleBar=False); the header band is the drag surface.
+    private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ButtonState == MouseButtonState.Pressed)
+        {
+            DragMove();
+        }
+    }
 }
