@@ -1,11 +1,12 @@
-using MahApps.Metro.Controls; // Added for StringBuilder
+using MahApps.Metro.Controls;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Standard.Licensing;
 using StandardLicensingGenerator.UiSettings;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -143,7 +144,6 @@ public partial class MainWindow : MetroWindow
         }
     }
 
-
     private void GenerateLicense_Click(object sender, RoutedEventArgs e)
     {
         if (!File.Exists(KeyFileBox.Text))
@@ -153,20 +153,34 @@ public partial class MainWindow : MetroWindow
         }
 
         var attributes = new Dictionary<string, string>();
+
         if (!string.IsNullOrWhiteSpace(AttributesBox.Text))
         {
             try
             {
-                var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(AttributesBox.Text);
-                if (parsed != null)
+                JToken token;
+                // DateParseHandling.None keeps date-like strings verbatim in the signed license.
+                using (var reader = new JsonTextReader(new StringReader(AttributesBox.Text)) { DateParseHandling = DateParseHandling.None })
                 {
-                    foreach (var kvp in parsed)
-                        attributes[kvp.Key] = kvp.Value;
+                    token = JToken.ReadFrom(reader);
+                    if (reader.Read())
+                        throw new JsonReaderException("Additional text found after the JSON value.");
+                }
+
+                foreach (var kv in JsonHelper.FlattenJsonToDictionary(token))
+                {
+                    attributes[kv.Key] = kv.Value;
                 }
             }
-            catch
+            catch (JsonException ex)
             {
-                Views.CustomMessageBox.Show(this, "Invalid JSON in additional attributes.", "Invalid Format", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Views.CustomMessageBox.Show(
+                    this,
+                    $"Invalid JSON in additional attributes: {ex.Message}",
+                    "Invalid Format",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
                 return;
             }
         }
@@ -197,12 +211,7 @@ public partial class MainWindow : MetroWindow
                 })
                 .ExpiresAt((DateTime)ExpirationPicker.SelectedDate!)
                 .WithMaximumUtilization(5)
-                // .WithProductFeatures(new Dictionary<string, string>  
-                // {  
-                //     {"Sales Module", "yes"},
-                //     {"Purchase Module", "yes"},  
-                //     {"Maximum Transactions", "10000"}  
-                // })  
+                .WithAdditionalAttributes(attributes)
                 .LicensedTo(CustomerNameBox.Text, CustomerEmailBox.Text)  
                 .CreateAndSignWithPrivateKey(privateKeyPemString, PasswordBox.Password);
 
@@ -354,7 +363,7 @@ public partial class MainWindow : MetroWindow
         _passPhrase = PasswordTextBox.Text;
     }
 
-    private void LaunchMahAppsOnGitHub(object sender, RoutedEventArgs e)
+    private void LaunchProjectOnGitHub(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
         {

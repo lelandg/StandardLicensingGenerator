@@ -17,7 +17,7 @@
     mc:Ignorable="d">
     <mah:MetroWindow.LeftWindowCommands>
         <mah:WindowCommands>
-            <Button Click="LaunchMahAppsOnGitHub" ToolTip="MahApps.Metro on GitHub">
+            <Button Click="LaunchProjectOnGitHub" ToolTip="StandardLicensingGenerator on GitHub">
                 <mahicon:PackIconMaterial
                     Width="22"
                     Height="22"
