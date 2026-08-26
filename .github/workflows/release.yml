@@ -1,20 +1,33 @@
 # Builds the portable single-file win-x64 executable and attaches it to the
 # GitHub Release whenever a v* tag is pushed. Tag pushes come only from
 # maintainers, so contents: write is safe here. Never use pull_request_target.
+# workflow_dispatch covers a tag whose push event was missed (repo rules
+# forbid tag deletion, so a tag cannot be re-pushed to re-fire the event).
 name: Release
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build and release (e.g. v1.3.0)'
+        required: true
+        type: string
 
 permissions:
   contents: write
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -35,10 +48,11 @@ jobs:
         run: >
           Get-ChildItem bin/Release/net10.0-windows/win-x64/publish -Exclude *.pdb |
           Compress-Archive
-          -DestinationPath StandardLicensingGenerator-${{ github.ref_name }}-win-x64-portable.zip
+          -DestinationPath StandardLicensingGenerator-${{ env.RELEASE_TAG }}-win-x64-portable.zip
 
       - name: Attach to release
         # v2.6.2, pinned to the commit SHA (third-party action with contents: write)
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           files: StandardLicensingGenerator-*-portable.zip
