@@ -21,6 +21,10 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly LicenseTemplateStore _templateStore;
     private readonly List<LicenseTemplate> _templates = new();
 
+    // Set while a template is re-selected programmatically (after save), so
+    // the selection does not re-apply the template over the user's form.
+    private bool _suppressTemplateApply;
+
     // Store previous form values when switching license types
     private string? _previousCustomerName;
     private string? _previousCustomerEmail;
@@ -120,7 +124,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     partial void OnSelectedTemplateChanged(LicenseTemplate? value)
     {
-        if (value != null)
+        if (value != null && !_suppressTemplateApply)
             ApplyTemplate(value);
     }
 
@@ -165,11 +169,33 @@ public partial class MainWindowViewModel : ObservableObject
     private void RefreshTemplates(string? selectName = null)
     {
         _templates.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
-        Templates.Clear();
-        foreach (var template in _templates)
-            Templates.Add(template);
-        if (selectName != null)
-            SelectedTemplate = LicenseTemplateStore.FindByName(_templates, selectName);
+        _suppressTemplateApply = true;
+        try
+        {
+            Templates.Clear();
+            foreach (var template in _templates)
+                Templates.Add(template);
+            if (selectName != null)
+                SelectedTemplate = LicenseTemplateStore.FindByName(_templates, selectName);
+        }
+        finally
+        {
+            _suppressTemplateApply = false;
+        }
+    }
+
+    // A failed write must not crash the app; the template stays usable in
+    // memory for this session either way.
+    private void SaveTemplateStore()
+    {
+        try
+        {
+            _templateStore.Save(_templates);
+        }
+        catch (Exception ex)
+        {
+            _dialogs.ShowMessage($"Failed to save templates: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     [RelayCommand]
@@ -197,7 +223,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
 
         _templates.Add(CaptureTemplate(name));
-        _templateStore.Save(_templates);
+        SaveTemplateStore();
         RefreshTemplates(selectName: name);
     }
 
@@ -222,7 +248,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
 
         _templates.Remove(existing);
-        _templateStore.Save(_templates);
+        SaveTemplateStore();
         RefreshTemplates();
         SelectedTemplate = null;
         TemplateName = "";

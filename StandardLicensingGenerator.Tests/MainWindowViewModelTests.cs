@@ -154,6 +154,24 @@ public class MainWindowViewModelTests : IDisposable
     }
 
     [Fact]
+    public void SaveTemplate_DoesNotReapplyTemplateToForm()
+    {
+        var vm = CreateViewModel();
+        vm.CustomerName = "Alice";
+        var expiration = DateTime.Now.AddDays(30); // carries a time of day
+        vm.ExpirationDate = expiration;
+        vm.TemplateName = "Acme";
+
+        vm.SaveTemplateCommand.Execute(null);
+
+        // Saving selects the template in the dropdown but must leave the form
+        // untouched (re-applying would snap the expiration to midnight).
+        Assert.Equal(vm.Templates[0], vm.SelectedTemplate);
+        Assert.Equal("Alice", vm.CustomerName);
+        Assert.Equal(expiration, vm.ExpirationDate);
+    }
+
+    [Fact]
     public void SaveTemplate_ExistingName_DeclinedOverwrite_KeepsOriginal()
     {
         var vm = CreateViewModel();

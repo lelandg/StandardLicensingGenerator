@@ -70,6 +70,7 @@
                             Grid.Column="0"
                             DisplayMemberPath="Name"
                             IsEditable="True"
+                            IsTextSearchEnabled="False"
                             ItemsSource="{Binding Templates}"
                             SelectedItem="{Binding SelectedTemplate}"
                             Tag="NoPersist"
@@ -279,6 +280,7 @@
                 VerticalAlignment="Stretch"
                 AcceptsReturn="True"
                 IsReadOnly="True"
+                Tag="NoPersist"
                 Text="{Binding ResultText, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap"
                 VerticalScrollBarVisibility="Auto" />

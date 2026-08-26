@@ -33,11 +33,12 @@ jobs:
       - name: Zip artifact
         shell: pwsh
         run: >
+          Get-ChildItem bin/Release/net10.0-windows/win-x64/publish -Exclude *.pdb |
           Compress-Archive
-          -Path bin/Release/net10.0-windows/win-x64/publish/*
           -DestinationPath StandardLicensingGenerator-${{ github.ref_name }}-win-x64-portable.zip
 
       - name: Attach to release
-        uses: softprops/action-gh-release@v2
+        # v2.6.2, pinned to the commit SHA (third-party action with contents: write)
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
           files: StandardLicensingGenerator-*-portable.zip
