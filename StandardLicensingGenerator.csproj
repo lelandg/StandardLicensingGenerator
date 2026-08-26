@@ -12,10 +12,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
       <PackageReference Include="MahApps.Metro" Version="2.4.11" />
       <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="6.2.1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 
+    </ItemGroup>
+
+    <!-- The test project lives in a subdirectory of this root-level project;
+         keep its sources out of the app's default compile globs. -->
+    <ItemGroup>
+      <Compile Remove="StandardLicensingGenerator.Tests\**" />
+      <None Remove="StandardLicensingGenerator.Tests\**" />
+      <Page Remove="StandardLicensingGenerator.Tests\**" />
     </ItemGroup>
 
     <ItemGroup>

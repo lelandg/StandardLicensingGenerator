@@ -1,232 +1,39 @@
 using MahApps.Metro.Controls;
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Standard.Licensing;
-using StandardLicensingGenerator.Models;
+using StandardLicensingGenerator.Services;
 using StandardLicensingGenerator.UiSettings;
+using StandardLicensingGenerator.ViewModels;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace StandardLicensingGenerator;
 
-// Extension methods for XML key format compatibility
-
+// View-only concerns for the main window: window lifetime, settings
+// persistence, child windows, and clipboard. Presentation logic lives in
+// MainWindowViewModel.
 public partial class MainWindow : MetroWindow
 {
     private readonly WindowSettingsManager _settingsManager;
-    private readonly LicenseTemplateStore _templateStore = new();
-    private List<LicenseTemplate> _templates = new();
-    private string? _passPhrase;
-    private bool _showPassword;
-
-    // Store previous form values when switching license types
-    private string? _previousCustomerName;
-    private string? _previousCustomerEmail;
-    private string? _previousAttributes;
-    private DateTime? _previousExpirationDate;
+    private readonly MainWindowViewModel _viewModel;
+    private readonly Views.PasswordReveal _passwordReveal;
 
     public MainWindow()
     {
         InitializeComponent();
-        LicenseTypeBox.SelectedIndex = 0;
+        _viewModel = new MainWindowViewModel(new DialogService(this));
+        DataContext = _viewModel;
         _settingsManager = new WindowSettingsManager(this);
-        _showPassword = false;
-        // Ensure the password TextBox is hidden and PasswordBox is visible on window loads
-        PasswordTextBox.Visibility = Visibility.Collapsed;
-        PasswordBox.Visibility = Visibility.Visible;
+        _passwordReveal = new Views.PasswordReveal(
+            PasswordBox, PasswordTextBox, ShowPasswordButton,
+            password => _viewModel.Password = password);
         ShowPasswordButton.Content = "S_how";
         PreviewKeyDown += On_KeyDown;
         Closing += On_Closing;
-
-        // Set up license type change handler
-        LicenseTypeBox.SelectionChanged += LicenseTypeBox_SelectionChanged;
-
-        _templates = _templateStore.Load();
-        RefreshTemplateList();
-    }
-
-    private void RefreshTemplateList(string? selectName = null)
-    {
-        _templates.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
-        TemplateBox.ItemsSource = null;
-        TemplateBox.ItemsSource = _templates;
-        if (selectName != null)
-            TemplateBox.SelectedItem = LicenseTemplateStore.FindByName(_templates, selectName);
-    }
-
-    private void TemplateBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-    {
-        if (TemplateBox.SelectedItem is LicenseTemplate template)
-        {
-            ApplyTemplate(template);
-        }
-    }
-
-    private void ApplyTemplate(LicenseTemplate template)
-    {
-        // Set the license type first: selecting "Trial" auto-fills the
-        // customer fields, and the template values must win over that.
-        foreach (ComboBoxItem item in LicenseTypeBox.Items)
-        {
-            if ((item.Content?.ToString() ?? "") == template.LicenseType)
-            {
-                LicenseTypeBox.SelectedItem = item;
-                break;
-            }
-        }
-
-        ProductNameBox.Text = template.ProductName ?? "";
-        VersionBox.Text = template.Version ?? "";
-        CustomerNameBox.Text = template.CustomerName ?? "";
-        CustomerEmailBox.Text = template.CustomerEmail ?? "";
-        AttributesBox.Text = template.AttributesJson ?? "";
-        if (!string.IsNullOrEmpty(template.KeyFilePath))
-            KeyFileBox.Text = template.KeyFilePath;
-        if (template.ValidityDays is int days)
-            ExpirationPicker.SelectedDate = DateTime.Today.AddDays(days);
-    }
-
-    private LicenseTemplate CaptureTemplate(string name)
-    {
-        int? validityDays = null;
-        if (ExpirationPicker.SelectedDate is DateTime expiration)
-            validityDays = Math.Max(0, (expiration.Date - DateTime.Today).Days);
-
-        return new LicenseTemplate
-        {
-            Name = name,
-            ProductName = ProductNameBox.Text,
-            Version = VersionBox.Text,
-            LicenseType = (LicenseTypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Standard",
-            ValidityDays = validityDays,
-            CustomerName = CustomerNameBox.Text,
-            CustomerEmail = CustomerEmailBox.Text,
-            AttributesJson = AttributesBox.Text,
-            KeyFilePath = KeyFileBox.Text
-        };
-    }
-
-    private void SaveTemplate_Click(object sender, RoutedEventArgs e)
-    {
-        string name = TemplateBox.Text.Trim();
-        if (name.Length == 0)
-        {
-            Views.CustomMessageBox.Show(this, "Type a name in the Template box first.", "Missing Name", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        var existing = LicenseTemplateStore.FindByName(_templates, name);
-        if (existing != null)
-        {
-            var result = Views.CustomMessageBox.Show(
-                this,
-                $"Overwrite the existing template \"{existing.Name}\"?",
-                "Overwrite Template",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question,
-                MessageBoxResult.No);
-            if (result != MessageBoxResult.Yes)
-                return;
-            _templates.Remove(existing);
-        }
-
-        _templates.Add(CaptureTemplate(name));
-        _templateStore.Save(_templates);
-        RefreshTemplateList(selectName: name);
-    }
-
-    private void DeleteTemplate_Click(object sender, RoutedEventArgs e)
-    {
-        string name = TemplateBox.Text.Trim();
-        var existing = LicenseTemplateStore.FindByName(_templates, name);
-        if (existing == null)
-        {
-            Views.CustomMessageBox.Show(this, "Select or type the name of a template to delete.", "No Template", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        var result = Views.CustomMessageBox.Show(
-            this,
-            $"Delete the template \"{existing.Name}\"?",
-            "Delete Template",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question,
-            MessageBoxResult.No);
-        if (result != MessageBoxResult.Yes)
-            return;
-
-        _templates.Remove(existing);
-        _templateStore.Save(_templates);
-        RefreshTemplateList();
-        TemplateBox.Text = "";
     }
 
     private void On_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         _settingsManager.Save();
-    }
-
-    private void LicenseTypeBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-    {
-        if (LicenseTypeBox.SelectedItem is ComboBoxItem selectedItem)
-        {
-            string licenseType = selectedItem.Content.ToString() ?? "";
-
-            if (licenseType == "Trial")
-            {
-                // Switching to Trial - store current values
-                StoreStandardLicenseValues();
-
-                // Set default trial values
-                SetTrialLicenseDefaults();
-            }
-            else if (licenseType == "Standard" && _previousCustomerName != null)
-            {
-                // Switching back to Standard - restore previous values
-                RestoreStandardLicenseValues();
-            }
-        }
-    }
-
-    private void StoreStandardLicenseValues()
-    {
-        // Store current values before switching to Trial
-        _previousCustomerName = CustomerNameBox.Text;
-        _previousCustomerEmail = CustomerEmailBox.Text;
-        _previousAttributes = AttributesBox.Text;
-        _previousExpirationDate = ExpirationPicker.SelectedDate;
-    }
-
-    private void SetTrialLicenseDefaults()
-    {
-        // Set default values for Trial license
-        CustomerNameBox.Text = "Trial User";
-        CustomerEmailBox.Text = "trial@example.com";
-        AttributesBox.Text = "{\"TrialMode\": \"true\", \"MaxUsers\": \"1\"}";
-
-        // Set expiration date to 30 days from now
-        ExpirationPicker.SelectedDate = DateTime.Now.AddDays(30);
-    }
-
-    private void RestoreStandardLicenseValues()
-    {
-        // Restore previous values when switching back to Standard
-        if (_previousCustomerName != null)
-            CustomerNameBox.Text = _previousCustomerName;
-
-        if (_previousCustomerEmail != null)
-            CustomerEmailBox.Text = _previousCustomerEmail;
-
-        if (_previousAttributes != null)
-            AttributesBox.Text = _previousAttributes;
-
-        if (_previousExpirationDate.HasValue)
-            ExpirationPicker.SelectedDate = _previousExpirationDate;
     }
 
     private void On_KeyDown(object sender, KeyEventArgs e)
@@ -251,127 +58,6 @@ public partial class MainWindow : MetroWindow
             case Key.F1:
                 ShowHelp_Click(this, new RoutedEventArgs());
                 break;
-        }
-    }
-
-    private void BrowseKey_Click(object sender, RoutedEventArgs e)
-    {
-        var dlg = new OpenFileDialog
-        {
-            Filter = "XML Key Files (*.xml)|*.xml|PEM Key Files (*.pem)|*.pem|All files (*.*)|*.*"
-        };
-        if (dlg.ShowDialog() == true)
-        {
-            KeyFileBox.Text = dlg.FileName;
-        }
-    }
-
-    private void GenerateLicense_Click(object sender, RoutedEventArgs e)
-    {
-        if (!File.Exists(KeyFileBox.Text))
-        {
-            Views.CustomMessageBox.Show(this, "Select a valid private key file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
-
-        var attributes = new Dictionary<string, string>();
-
-        if (!string.IsNullOrWhiteSpace(AttributesBox.Text))
-        {
-            try
-            {
-                JToken token;
-                // DateParseHandling.None keeps date-like strings verbatim in the signed license.
-                using (var reader = new JsonTextReader(new StringReader(AttributesBox.Text)) { DateParseHandling = DateParseHandling.None })
-                {
-                    token = JToken.ReadFrom(reader);
-                    if (reader.Read())
-                        throw new JsonReaderException("Additional text found after the JSON value.");
-                }
-
-                foreach (var kv in JsonHelper.FlattenJsonToDictionary(token))
-                {
-                    attributes[kv.Key] = kv.Value;
-                }
-            }
-            catch (JsonException ex)
-            {
-                Views.CustomMessageBox.Show(
-                    this,
-                    $"Invalid JSON in additional attributes: {ex.Message}",
-                    "Invalid Format",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
-                return;
-            }
-        }
-
-        try
-        {
-            string privateKeyPemString = File.ReadAllText(KeyFileBox.Text);
-            string keyFormat = Path.GetExtension(KeyFileBox.Text).ToLowerInvariant();
-            if (ExpirationPicker.SelectedDate == null)
-            {
-                Views.CustomMessageBox.Show(this, "Select a valid expiration date.", "Missing Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            // Normalize the key using .NET functionality if needed
-            if (!privateKeyPemString.Contains("BEGIN PRIVATE KEY") && privateKeyPemString.Contains("BEGIN RSA PRIVATE KEY"))
-            {
-                privateKeyPemString = KeyFormatUtility.NormalizePrivateKey(privateKeyPemString);
-            }
-
-            var license = License.New()  
-                .WithUniqueIdentifier(Guid.NewGuid())
-                .As(((ComboBoxItem)LicenseTypeBox.SelectedItem).Content.ToString() switch
-                {
-                    "Trial" => LicenseType.Trial,
-                    "Standard" => LicenseType.Standard,
-                    _ => LicenseType.Trial
-                })
-                .ExpiresAt((DateTime)ExpirationPicker.SelectedDate!)
-                .WithMaximumUtilization(5)
-                .WithAdditionalAttributes(attributes)
-                .LicensedTo(CustomerNameBox.Text, CustomerEmailBox.Text)  
-                .CreateAndSignWithPrivateKey(privateKeyPemString, PasswordBox.Password);
-
-            ResultBox.Text = license.ToString();
-        }
-        catch (ArgumentException argEx) when (argEx.Message.Contains("Bad sequence size"))
-        {
-            Views.CustomMessageBox.Show(
-                this,
-                "The selected private key appears to be encrypted with a passphrase. " +
-                "This tool currently supports only unencrypted keys.",
-                "Unsupported Key",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-
-            string detailedInfo = GetDetailedExceptionInfo(argEx);
-            ResultBox.Text = $"Error Details:\n{detailedInfo}";
-        }
-        catch (Exception ex)
-        {
-            string errorSummary = $"Error generating license: {ex.Message}";
-            Views.CustomMessageBox.Show(this, errorSummary, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-
-            // Log detailed exception info for troubleshooting
-            string detailedInfo = GetDetailedExceptionInfo(ex);
-            ResultBox.Text = $"Error Details:\n{detailedInfo}";
-        }
-    }
-
-    private void SaveLicense_Click(object sender, RoutedEventArgs e)
-    {
-        var dlg = new SaveFileDialog
-        {
-            Filter = "License File (*.lic)|*.lic|All files (*.*)|*.*"
-        };
-        if (dlg.ShowDialog() == true)
-        {
-            File.WriteAllText(dlg.FileName, ResultBox.Text);
         }
     }
 
@@ -400,89 +86,17 @@ public partial class MainWindow : MetroWindow
         {
             if (keyPairWindow.InsertedPrivateKeyPath != null)
             {
-                KeyFileBox.Text = keyPairWindow.InsertedPrivateKeyPath;
+                _viewModel.KeyFilePath = keyPairWindow.InsertedPrivateKeyPath;
+                // Setting the PasswordBox raises PasswordChanged, which syncs
+                // the mirror TextBox and the ViewModel.
                 PasswordBox.Password = keyPairWindow.Password ?? "";
             }
         }
     }
 
-    private string GetDetailedExceptionInfo(Exception ex)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Exception: {ex.GetType().FullName}");
-        sb.AppendLine($"Message: {ex.Message}");
-        sb.AppendLine($"Stack Trace: {ex.StackTrace}");
-
-        if (ex.InnerException != null)
-        {
-            sb.AppendLine("\nInner Exception:");
-            sb.AppendLine(GetDetailedExceptionInfo(ex.InnerException));
-        }
-
-        return sb.ToString();
-    }
-
     private void CopyResultToClipboard_Click(object sender, RoutedEventArgs e)
     {
-        Clipboard.SetText(ResultBox.Text);
-    }
-    private void ShowPasswordButton_Click(object sender, RoutedEventArgs e)
-    {
-        _showPassword = !_showPassword;
-
-        if (_showPassword)
-        {
-            // Make sure text box has the current password value before showing it
-            if (PasswordTextBox.Text != PasswordBox.Password)
-            {
-                PasswordTextBox.Text = PasswordBox.Password;
-            }
-
-            // Show text box, hide password box
-            PasswordBox.Visibility = Visibility.Collapsed;
-            PasswordTextBox.Visibility = Visibility.Visible;
-            PasswordTextBox.Focus();
-            PasswordTextBox.SelectionStart = PasswordTextBox.Text.Length; // Position cursor at end
-        }
-        else
-        {
-            // Make sure password box has the current text value before showing it
-            if (PasswordBox.Password != PasswordTextBox.Text)
-            {
-                PasswordBox.Password = PasswordTextBox.Text;
-            }
-
-            // Show password box, hide text box
-            PasswordTextBox.Visibility = Visibility.Collapsed;
-            PasswordBox.Visibility = Visibility.Visible;
-            PasswordBox.Focus();
-        }
-    }
-
-    private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-    {
-        // Always keep the text box in sync with the password box
-        // This ensures both fields have the value when toggling visibility
-        if (PasswordTextBox.Text != PasswordBox.Password)
-        {
-            PasswordTextBox.Text = PasswordBox.Password;
-        }
-
-        // Update the passphrase when the password changes
-        _passPhrase = PasswordBox.Password;
-    }
-
-    private void PasswordTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-    {
-        // Always keep the password box in sync with the text box
-        // This ensures both fields have the value when toggling visibility
-        if (PasswordBox.Password != PasswordTextBox.Text)
-        {
-            PasswordBox.Password = PasswordTextBox.Text;
-        }
-
-        // Update the passphrase when the text changes
-        _passPhrase = PasswordTextBox.Text;
+        Clipboard.SetText(_viewModel.ResultText);
     }
 
     private void LaunchProjectOnGitHub(object sender, RoutedEventArgs e)

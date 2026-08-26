@@ -10,21 +10,35 @@ compatible with the [Standard.Licensing](https://github.com/junian/Standard.Lice
 library. Users configure license fields, sign with an RSA private key, and
 save the result as a `.lic` file. The app also generates RSA key pairs.
 
-- Target: `net9.0-windows`, WPF, `<Nullable>enable</Nullable>`, implicit usings.
-- Single project, no solution-level extras, no test project yet.
+- Target: `net10.0-windows`, WPF (MVVM via `CommunityToolkit.Mvvm`),
+  `<Nullable>enable</Nullable>`, implicit usings.
+- Two projects in the `.slnx`: the app and `StandardLicensingGenerator.Tests`
+  (xunit). The tests target `net10.0-windows`, so they **run on Windows only**
+  (they cross-compile on Linux but need the WindowsDesktop runtime to execute).
 - Main dependency: `Standard.Licensing`. Do not add new package dependencies
   without a stated reason.
 
 ## Structure
 
-- `MainWindow.xaml(.cs)` — license form, JSON attribute parsing, license
-  generation and signing.
-- `KeyPairGeneratorWindow.xaml(.cs)` — RSA key pair generation.
+- `MainWindow.xaml(.cs)` / `KeyPairGeneratorWindow.xaml(.cs)` — views; thin
+  code-behind (window lifetime, dialogs ownership, clipboard, DialogResult).
+- `ViewModels/` — presentation logic (`MainWindowViewModel`,
+  `KeyPairGeneratorViewModel`). New UI logic goes here, not in code-behind.
+- `Services/` — `IDialogService`/`DialogService`; ViewModels never open
+  dialogs directly.
+- `Models/` — `LicenseTemplate` + `LicenseTemplateStore`
+  (`%APPDATA%\StandardLicensingGenerator\Templates.json`). Templates must
+  never contain the key password.
 - `KeyFormatUtility.cs` — PEM/XML key normalization.
 - `Views/CustomMessageBox.*` — themed message box. **Always use
   `Views.CustomMessageBox.Show(...)`, never `MessageBox.Show`.**
+  `Views/PasswordReveal.cs` — shared PasswordBox/TextBox reveal sync.
 - `UiSettings/` — window position/size persistence (`System.Text.Json`).
+  Controls with `Tag="NoPersist"` are excluded — required for password
+  mirrors and the template selector.
 - `Extensions/`, `Resources/`, `Screenshots/` — support code and assets.
+- `StandardLicensingGenerator.Tests/` — xunit tests for ViewModel and model
+  logic.
 
 ## Build and verify
 
