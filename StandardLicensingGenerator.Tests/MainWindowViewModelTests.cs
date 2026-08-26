@@ -223,6 +223,60 @@ public class MainWindowViewModelTests : IDisposable
         Assert.Empty(reloaded.Templates);
     }
 
+    // --- Validity period ----------------------------------------------------
+
+    [Fact]
+    public void ValidityText_ComputesExpirationFromToday()
+    {
+        var vm = CreateViewModel();
+
+        vm.ValidityText = "1 month";
+        Assert.Equal(DateTime.Today.AddMonths(1), vm.ExpirationDate);
+
+        vm.ValidityText = "5 years";
+        Assert.Equal(DateTime.Today.AddYears(5), vm.ExpirationDate);
+    }
+
+    [Fact]
+    public void ValidityText_InvalidInput_LeavesDateUnchanged()
+    {
+        var vm = CreateViewModel();
+        var expiration = DateTime.Today.AddDays(10);
+        vm.ExpirationDate = expiration;
+
+        vm.ValidityText = "soon";
+
+        Assert.Equal(expiration, vm.ExpirationDate);
+    }
+
+    [Fact]
+    public void EditingExpirationDateDirectly_ClearsValidityText()
+    {
+        var vm = CreateViewModel();
+        vm.ValidityText = "1 month";
+
+        vm.ExpirationDate = DateTime.Today.AddDays(3); // manual edit
+
+        Assert.Equal("", vm.ValidityText);
+        Assert.Equal(DateTime.Today.AddDays(3), vm.ExpirationDate);
+    }
+
+    [Fact]
+    public void ApplyingTemplate_ClearsValidityText()
+    {
+        var vm = CreateViewModel();
+        vm.ExpirationDate = DateTime.Today.AddDays(30);
+        vm.TemplateName = "Acme";
+        vm.SaveTemplateCommand.Execute(null);
+
+        vm.SelectedTemplate = null;
+        vm.ValidityText = "5 years";
+        vm.SelectedTemplate = vm.Templates[0];
+
+        Assert.Equal("", vm.ValidityText);
+        Assert.Equal(DateTime.Today.AddDays(30), vm.ExpirationDate);
+    }
+
     // --- License generation ------------------------------------------------
 
     [Fact]

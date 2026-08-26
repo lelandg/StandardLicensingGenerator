@@ -152,12 +152,28 @@
                         Grid.Column="0"
                         Margin="0,2"
                         Text="Expiration Date:" />
-                    <DatePicker
-                        x:Name="ExpirationPicker"
+                    <Grid
                         Grid.Row="3"
                         Grid.Column="1"
-                        Margin="0,2"
-                        SelectedDate="{Binding ExpirationDate, UpdateSourceTrigger=PropertyChanged}" />
+                        Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox
+                            x:Name="ValidityBox"
+                            Grid.Column="0"
+                            Margin="0,0,5,0"
+                            IsEditable="True"
+                            ItemsSource="{Binding ValidityPresets}"
+                            Tag="NoPersist"
+                            Text="{Binding ValidityText, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="Pick or type a validity period (e.g. 45 days, 1 month, 5 years). The expiration date is computed from today; you can still edit the date directly." />
+                        <DatePicker
+                            x:Name="ExpirationPicker"
+                            Grid.Column="1"
+                            SelectedDate="{Binding ExpirationDate, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
 
                     <TextBlock
                         Grid.Row="4"

@@ -41,6 +41,9 @@ public partial class MainWindowViewModel : ObservableObject
 
     public IReadOnlyList<string> LicenseTypes { get; } = new[] { "Standard", "Trial" };
 
+    public IReadOnlyList<string> ValidityPresets { get; } =
+        new[] { "1 week", "2 weeks", "1 month", "3 months", "6 months", "1 year", "2 years", "5 years" };
+
     public ObservableCollection<LicenseTemplate> Templates { get; } = new();
 
     [ObservableProperty]
@@ -54,6 +57,11 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private DateTime? expirationDate;
+
+    // A validity period ("45 days", "1 month", "5 years") that computes the
+    // expiration date from today. The date picker stays directly editable.
+    [ObservableProperty]
+    private string validityText = "";
 
     [ObservableProperty]
     private string customerName = "";
@@ -78,6 +86,46 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string templateName = "";
+
+    // Guards so the validity text and the expiration date can update each
+    // other without looping or clearing themselves.
+    private bool _updatingExpirationFromValidity;
+    private bool _clearingValidity;
+
+    partial void OnValidityTextChanged(string value)
+    {
+        if (_clearingValidity)
+            return;
+        if (ValidityPeriod.TryCompute(value, DateTime.Today, out var expiration))
+        {
+            _updatingExpirationFromValidity = true;
+            try
+            {
+                ExpirationDate = expiration;
+            }
+            finally
+            {
+                _updatingExpirationFromValidity = false;
+            }
+        }
+    }
+
+    partial void OnExpirationDateChanged(DateTime? value)
+    {
+        // A date set any other way (manual edit, restore, template, trial
+        // defaults) no longer matches the typed period, so clear it.
+        if (_updatingExpirationFromValidity)
+            return;
+        _clearingValidity = true;
+        try
+        {
+            ValidityText = "";
+        }
+        finally
+        {
+            _clearingValidity = false;
+        }
+    }
 
     partial void OnLicenseTypeChanged(string value)
     {

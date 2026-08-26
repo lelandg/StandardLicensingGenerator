@@ -28,6 +28,7 @@ A Windows desktop tool for generating licenses compatible with the [Standard.Lic
 
 - Create **Standard**, **Trial** license types
 - Set product name, version, and expiration date
+- Enter a validity period (e.g. `45 days`, `1 month`, `5 years`) to compute the expiration date, or set the date directly
 - Store customer information (name and email)
 - Add any additional attributes using JSON
 - Save license form values as named **templates** and recall them from a dropdown
@@ -50,7 +51,7 @@ The UI is designed with sensible defaults and labeled inputs so generating a lic
 3. Select the desired license type (Standard or Trial):
    - **Standard**: Full license with custom customer information
    - **Trial**: Pre-configured with trial defaults and 30-day expiration
-4. Set an expiration date (required).
+4. Set the expiration date (required). Pick or type a validity period in the dropdown next to the date — presets like **1 month** or **5 years**, or free-form like `45 days` — and the date is computed from today. You can still edit the computed date directly in the date picker; a manual edit clears the period text, since the date no longer matches it.
 5. Optionally add extra attributes in JSON format (e.g. `{ "Seats": "5" }`).
 6. Browse to your private key file. PEM keys are recommended, but existing XML keys are also supported.
 7. If your key is password-protected, enter the password.
