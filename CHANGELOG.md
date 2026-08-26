@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-26
+
+### Added
+- Named license templates (#11): save the license form under a name and recall it from the new Template dropdown. Templates store validity as days relative to the save date, so they never carry an expired date, and they never contain the key password.
+- Unit test project (`StandardLicensingGenerator.Tests`, xunit) covering ViewModel, template, and license-generation logic (#14). Tests run on Windows.
+- Automated portable releases (#16): pushing a `v*` tag builds a self-contained single-file win-x64 executable and attaches it to the GitHub Release. The README gains a Download section.
+
+### Changed
+- Migrated the UI to MVVM with CommunityToolkit.Mvvm (#14): presentation logic moved from code-behind into ViewModels, views use data binding and commands, and dialogs go through a service so the logic is unit-testable. Behavior is unchanged.
+- MahApps.Metro UI refactor merged from PR #15: themed windows, DynamicResource theme brushes, and window chrome cleanup (thanks @Teo230).
+- README build documentation updated from .NET 9 to .NET 10 paths and requirements.
+
+### Fixed
+- The private-key password is no longer saved in plaintext to the window-settings JSON: the visible password mirror text box is now excluded from settings persistence in both windows.
+
 ## [1.2.0] - 2026-08-22
 
 ### Added
