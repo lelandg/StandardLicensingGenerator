@@ -20,6 +20,7 @@ A Windows desktop tool for generating licenses compatible with the [Standard.Lic
 - Set product name, version, and expiration date
 - Store customer information (name and email)
 - Add any additional attributes using JSON
+- Save license form values as named **templates** and recall them from a dropdown
 - Sign licenses using your own RSA private key
 - Save generated licenses to a file
 - Generate RSA key pairs for license signing
@@ -45,6 +46,21 @@ The UI is designed with sensible defaults and labeled inputs so generating a lic
 7. If your key is password-protected, enter the password.
 8. Click **Generate License** to view the resulting license text.
 9. Use **File → Save License** to store the license in a `.lic` file, or copy to clipboard using the Copy button.
+
+### License Templates
+
+Templates store a named set of license form values so you do not re-enter them for every license.
+
+1. Fill in the license form.
+2. Type a name in the **Template** box and click **Save Template**.
+3. To reuse a template, select its name in the **Template** dropdown. The form fills in automatically.
+4. To remove a template, select it and click **Delete**.
+
+Notes:
+
+- The expiration date is stored as a number of days relative to the save date. A template saved with an expiration 30 days out always produces an expiration 30 days from the day you apply it.
+- Templates store the private key **file path**, never the key itself and never the key password.
+- Templates are saved in `%APPDATA%\StandardLicensingGenerator\Templates.json`.
 
 ### Generating Key Pairs
 

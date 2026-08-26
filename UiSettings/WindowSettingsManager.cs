@@ -164,11 +164,22 @@ public class WindowSettingsManager
         File.WriteAllText(_filePath, json);
     }
 
+    // Controls opt out of persistence with Tag="NoPersist". Used for the
+    // visible password mirror TextBox (a secret that must never reach disk)
+    // and the template selector (re-applying it on load would clobber the
+    // restored field values).
+    private static bool IsExcluded(FrameworkElement element)
+    {
+        return element.Tag as string == "NoPersist";
+    }
+
     private Dictionary<string, string> GetControlValues()
     {
         var values = new Dictionary<string, string>();
         foreach (var kvp in _controls)
         {
+            if (IsExcluded(kvp.Value))
+                continue;
             switch (kvp.Value)
             {
                 case TextBox tb:
@@ -206,6 +217,9 @@ public class WindowSettingsManager
                 control = element;
                 _controls[kvp.Key] = element; // Add to our collection for future use
             }
+
+            if (IsExcluded(control))
+                continue;
 
             switch (control)
             {

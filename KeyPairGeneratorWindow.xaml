@@ -71,6 +71,7 @@
                 x:Name="PasswordTextBox"
                 Grid.Column="1"
                 Margin="10,0,10,0"
+                Tag="NoPersist"
                 TextChanged="PasswordTextBox_TextChanged" />
 
             <Button

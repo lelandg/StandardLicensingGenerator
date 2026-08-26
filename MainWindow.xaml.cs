@@ -3,6 +3,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Standard.Licensing;
+using StandardLicensingGenerator.Models;
 using StandardLicensingGenerator.UiSettings;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +19,8 @@ namespace StandardLicensingGenerator;
 public partial class MainWindow : MetroWindow
 {
     private readonly WindowSettingsManager _settingsManager;
+    private readonly LicenseTemplateStore _templateStore = new();
+    private List<LicenseTemplate> _templates = new();
     private string? _passPhrase;
     private bool _showPassword;
 
@@ -42,6 +45,125 @@ public partial class MainWindow : MetroWindow
 
         // Set up license type change handler
         LicenseTypeBox.SelectionChanged += LicenseTypeBox_SelectionChanged;
+
+        _templates = _templateStore.Load();
+        RefreshTemplateList();
+    }
+
+    private void RefreshTemplateList(string? selectName = null)
+    {
+        _templates.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
+        TemplateBox.ItemsSource = null;
+        TemplateBox.ItemsSource = _templates;
+        if (selectName != null)
+            TemplateBox.SelectedItem = LicenseTemplateStore.FindByName(_templates, selectName);
+    }
+
+    private void TemplateBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (TemplateBox.SelectedItem is LicenseTemplate template)
+        {
+            ApplyTemplate(template);
+        }
+    }
+
+    private void ApplyTemplate(LicenseTemplate template)
+    {
+        // Set the license type first: selecting "Trial" auto-fills the
+        // customer fields, and the template values must win over that.
+        foreach (ComboBoxItem item in LicenseTypeBox.Items)
+        {
+            if ((item.Content?.ToString() ?? "") == template.LicenseType)
+            {
+                LicenseTypeBox.SelectedItem = item;
+                break;
+            }
+        }
+
+        ProductNameBox.Text = template.ProductName ?? "";
+        VersionBox.Text = template.Version ?? "";
+        CustomerNameBox.Text = template.CustomerName ?? "";
+        CustomerEmailBox.Text = template.CustomerEmail ?? "";
+        AttributesBox.Text = template.AttributesJson ?? "";
+        if (!string.IsNullOrEmpty(template.KeyFilePath))
+            KeyFileBox.Text = template.KeyFilePath;
+        if (template.ValidityDays is int days)
+            ExpirationPicker.SelectedDate = DateTime.Today.AddDays(days);
+    }
+
+    private LicenseTemplate CaptureTemplate(string name)
+    {
+        int? validityDays = null;
+        if (ExpirationPicker.SelectedDate is DateTime expiration)
+            validityDays = Math.Max(0, (expiration.Date - DateTime.Today).Days);
+
+        return new LicenseTemplate
+        {
+            Name = name,
+            ProductName = ProductNameBox.Text,
+            Version = VersionBox.Text,
+            LicenseType = (LicenseTypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Standard",
+            ValidityDays = validityDays,
+            CustomerName = CustomerNameBox.Text,
+            CustomerEmail = CustomerEmailBox.Text,
+            AttributesJson = AttributesBox.Text,
+            KeyFilePath = KeyFileBox.Text
+        };
+    }
+
+    private void SaveTemplate_Click(object sender, RoutedEventArgs e)
+    {
+        string name = TemplateBox.Text.Trim();
+        if (name.Length == 0)
+        {
+            Views.CustomMessageBox.Show(this, "Type a name in the Template box first.", "Missing Name", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var existing = LicenseTemplateStore.FindByName(_templates, name);
+        if (existing != null)
+        {
+            var result = Views.CustomMessageBox.Show(
+                this,
+                $"Overwrite the existing template \"{existing.Name}\"?",
+                "Overwrite Template",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question,
+                MessageBoxResult.No);
+            if (result != MessageBoxResult.Yes)
+                return;
+            _templates.Remove(existing);
+        }
+
+        _templates.Add(CaptureTemplate(name));
+        _templateStore.Save(_templates);
+        RefreshTemplateList(selectName: name);
+    }
+
+    private void DeleteTemplate_Click(object sender, RoutedEventArgs e)
+    {
+        string name = TemplateBox.Text.Trim();
+        var existing = LicenseTemplateStore.FindByName(_templates, name);
+        if (existing == null)
+        {
+            Views.CustomMessageBox.Show(this, "Select or type the name of a template to delete.", "No Template", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var result = Views.CustomMessageBox.Show(
+            this,
+            $"Delete the template \"{existing.Name}\"?",
+            "Delete Template",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question,
+            MessageBoxResult.No);
+        if (result != MessageBoxResult.Yes)
+            return;
+
+        _templates.Remove(existing);
+        _templateStore.Save(_templates);
+        RefreshTemplateList();
+        TemplateBox.Text = "";
     }
 
     private void On_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

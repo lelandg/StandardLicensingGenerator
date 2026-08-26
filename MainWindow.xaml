@@ -50,6 +50,44 @@
                     FontSize="18"
                     FontWeight="Bold"
                     Text="License Details" />
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Template:" />
+                    <Grid Grid.Column="1" Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox
+                            x:Name="TemplateBox"
+                            Grid.Column="0"
+                            DisplayMemberPath="Name"
+                            IsEditable="True"
+                            SelectionChanged="TemplateBox_SelectionChanged"
+                            Tag="NoPersist"
+                            TextSearch.TextPath="Name"
+                            ToolTip="Select a template to fill the form, or type a new name and click Save Template." />
+                        <Button
+                            Grid.Column="1"
+                            Margin="5,0,0,0"
+                            Padding="5"
+                            Click="SaveTemplate_Click"
+                            Content="Save _Template" />
+                        <Button
+                            Grid.Column="2"
+                            Margin="5,0,0,0"
+                            Padding="5"
+                            Click="DeleteTemplate_Click"
+                            Content="De_lete" />
+                    </Grid>
+                </Grid>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -206,6 +244,7 @@
                             x:Name="PasswordTextBox"
                             Grid.Column="0"
                             Margin="0,0,10,0"
+                            Tag="NoPersist"
                             TextChanged="PasswordTextBox_TextChanged" />
                         <Button
                             x:Name="ShowPasswordButton"
