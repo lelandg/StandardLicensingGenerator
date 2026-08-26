@@ -28,7 +28,7 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Click="SaveLicense_Click" Header="Save License" />
+                <MenuItem Command="{Binding SaveLicenseCommand}" Header="Save License" />
                 <Separator />
                 <MenuItem Click="Exit_Click" Header="Exit" />
             </MenuItem>
@@ -50,6 +50,47 @@
                     FontSize="18"
                     FontWeight="Bold"
                     Text="License Details" />
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Margin="0,2"
+                        Text="Template:" />
+                    <Grid Grid.Column="1" Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox
+                            x:Name="TemplateBox"
+                            Grid.Column="0"
+                            DisplayMemberPath="Name"
+                            IsEditable="True"
+                            IsTextSearchEnabled="False"
+                            ItemsSource="{Binding Templates}"
+                            SelectedItem="{Binding SelectedTemplate}"
+                            Tag="NoPersist"
+                            Text="{Binding TemplateName, UpdateSourceTrigger=PropertyChanged}"
+                            TextSearch.TextPath="Name"
+                            ToolTip="Select a template to fill the form, or type a new name and click Save Template." />
+                        <Button
+                            Grid.Column="1"
+                            Margin="5,0,0,0"
+                            Padding="5"
+                            Command="{Binding SaveTemplateCommand}"
+                            Content="Save _Template" />
+                        <Button
+                            Grid.Column="2"
+                            Margin="5,0,0,0"
+                            Padding="5"
+                            Command="{Binding DeleteTemplateCommand}"
+                            Content="De_lete" />
+                    </Grid>
+                </Grid>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -77,7 +118,8 @@
                         x:Name="ProductNameBox"
                         Grid.Row="0"
                         Grid.Column="1"
-                        Margin="0,2" />
+                        Margin="0,2"
+                        Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" />
 
                     <TextBlock
                         Grid.Row="1"
@@ -88,7 +130,8 @@
                         x:Name="VersionBox"
                         Grid.Row="1"
                         Grid.Column="1"
-                        Margin="0,2" />
+                        Margin="0,2"
+                        Text="{Binding Version, UpdateSourceTrigger=PropertyChanged}" />
 
                     <TextBlock
                         Grid.Row="2"
@@ -99,22 +142,38 @@
                         x:Name="LicenseTypeBox"
                         Grid.Row="2"
                         Grid.Column="1"
-                        Margin="0,2">
-                        <ComboBoxItem Content="Standard" />
-                        <ComboBoxItem Content="Trial" />
-                        <!-- <ComboBoxItem Content="Custom"/> TODO -->
-                    </ComboBox>
+                        Margin="0,2"
+                        ItemsSource="{Binding LicenseTypes}"
+                        SelectedItem="{Binding LicenseType}" />
+                    <!--  "Custom" license type: TODO  -->
 
                     <TextBlock
                         Grid.Row="3"
                         Grid.Column="0"
                         Margin="0,2"
                         Text="Expiration Date:" />
-                    <DatePicker
-                        x:Name="ExpirationPicker"
+                    <Grid
                         Grid.Row="3"
                         Grid.Column="1"
-                        Margin="0,2" />
+                        Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox
+                            x:Name="ValidityBox"
+                            Grid.Column="0"
+                            Margin="0,0,5,0"
+                            IsEditable="True"
+                            ItemsSource="{Binding ValidityPresets}"
+                            Tag="NoPersist"
+                            Text="{Binding ValidityText, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="Pick or type a validity period (e.g. 45 days, 1 month, 5 years). The expiration date is computed from today; you can still edit the date directly." />
+                        <DatePicker
+                            x:Name="ExpirationPicker"
+                            Grid.Column="1"
+                            SelectedDate="{Binding ExpirationDate, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
 
                     <TextBlock
                         Grid.Row="4"
@@ -125,7 +184,8 @@
                         x:Name="CustomerNameBox"
                         Grid.Row="4"
                         Grid.Column="1"
-                        Margin="0,2" />
+                        Margin="0,2"
+                        Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}" />
 
                     <TextBlock
                         Grid.Row="5"
@@ -136,7 +196,8 @@
                         x:Name="CustomerEmailBox"
                         Grid.Row="5"
                         Grid.Column="1"
-                        Margin="0,2" />
+                        Margin="0,2"
+                        Text="{Binding CustomerEmail, UpdateSourceTrigger=PropertyChanged}" />
 
                     <TextBlock
                         Grid.Row="6"
@@ -150,6 +211,7 @@
                         Height="60"
                         Margin="0,2"
                         AcceptsReturn="True"
+                        Text="{Binding AttributesJson, UpdateSourceTrigger=PropertyChanged}"
                         TextWrapping="Wrap" />
 
                     <TextBlock
@@ -169,12 +231,13 @@
                         <TextBox
                             x:Name="KeyFileBox"
                             Grid.Column="0"
-                            Margin="0,0,5,0" />
+                            Margin="0,0,5,0"
+                            Text="{Binding KeyFilePath, UpdateSourceTrigger=PropertyChanged}" />
                         <Button
                             Grid.Column="1"
                             Margin="5"
                             Padding="5"
-                            Click="BrowseKey_Click"
+                            Command="{Binding BrowseKeyCommand}"
                             Content="_Browse" />
                         <Button
                             Grid.Column="2"
@@ -199,19 +262,17 @@
                         <PasswordBox
                             x:Name="PasswordBox"
                             Grid.Column="0"
-                            Margin="0,0,10,0"
-                            PasswordChanged="PasswordBox_PasswordChanged" />
+                            Margin="0,0,10,0" />
 
                         <TextBox
                             x:Name="PasswordTextBox"
                             Grid.Column="0"
                             Margin="0,0,10,0"
-                            TextChanged="PasswordTextBox_TextChanged" />
+                            Tag="NoPersist" />
                         <Button
                             x:Name="ShowPasswordButton"
                             Grid.Column="1"
                             Padding="5"
-                            Click="ShowPasswordButton_Click"
                             Content="Sho_w" />
                     </Grid>
                     <Button
@@ -222,7 +283,7 @@
                         Margin="0,10,0,0"
                         Padding="5"
                         HorizontalContentAlignment="Center"
-                        Click="GenerateLicense_Click"
+                        Command="{Binding GenerateLicenseCommand}"
                         Content="_Generate License"
                         IsDefault="True" />
                 </Grid>
@@ -235,6 +296,8 @@
                 VerticalAlignment="Stretch"
                 AcceptsReturn="True"
                 IsReadOnly="True"
+                Tag="NoPersist"
+                Text="{Binding ResultText, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap"
                 VerticalScrollBarVisibility="Auto" />
             <Grid Grid.Row="2">
@@ -253,7 +316,7 @@
                     Margin="0,10,0,0"
                     Padding="5"
                     HorizontalContentAlignment="Center"
-                    Click="SaveLicense_Click"
+                    Command="{Binding SaveLicenseCommand}"
                     Content="_Save License" />
                 <Button
                     Grid.Column="2"

@@ -1,0 +1,44 @@
+# Builds the portable single-file win-x64 executable and attaches it to the
+# GitHub Release whenever a v* tag is pushed. Tag pushes come only from
+# maintainers, so contents: write is safe here. Never use pull_request_target.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Run tests
+        run: dotnet test StandardLicensingGenerator.Tests/StandardLicensingGenerator.Tests.csproj -c Release
+
+      - name: Publish portable build
+        run: >
+          dotnet publish StandardLicensingGenerator.csproj -c Release -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+
+      - name: Zip artifact
+        shell: pwsh
+        run: >
+          Get-ChildItem bin/Release/net10.0-windows/win-x64/publish -Exclude *.pdb |
+          Compress-Archive
+          -DestinationPath StandardLicensingGenerator-${{ github.ref_name }}-win-x64-portable.zip
+
+      - name: Attach to release
+        # v2.6.2, pinned to the commit SHA (third-party action with contents: write)
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
+        with:
+          files: StandardLicensingGenerator-*-portable.zip

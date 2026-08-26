@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="StandardLicensingGenerator.csproj" />
+  <Project Path="StandardLicensingGenerator.Tests/StandardLicensingGenerator.Tests.csproj" />
 </Solution>

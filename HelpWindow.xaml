@@ -77,7 +77,8 @@
                             Select the desired license type (Standard, Trial, or Custom).</TextBlock>
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">3.</Run>
-                            Set an expiration date if applicable.</TextBlock>
+                            Set the expiration date: pick or type a validity period (e.g. 45 days, 1 month, 5 years)
+                            to compute the date from today, or edit the date directly in the date picker.</TextBlock>
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">4.</Run>
                             Add extra attributes in JSON format if needed (e.g. { "Seats": "5" }).</TextBlock>
@@ -92,6 +93,42 @@
                             <Run FontWeight="SemiBold">7.</Run>
                             Use <Run FontWeight="SemiBold">File → Save License</Run>
                             to store the license as a .lic file.</TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!--  Templates Section  -->
+                <Border
+                    Margin="0,0,0,15"
+                    Padding="15"
+                    Background="White"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <StackPanel>
+                        <TextBlock
+                            Margin="0,0,0,10"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource MahApps.Brushes.AccentBase}"
+                            Text="License Templates" />
+                        <TextBlock Margin="0,0,0,10" TextWrapping="Wrap">
+                            Templates store a named set of license form values so you do not re-enter them for every license.
+                        </TextBlock>
+                        <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold">Save:</Run>
+                            Fill in the form, type a name in the Template box, and click
+                            <Run FontWeight="SemiBold">Save Template</Run>.</TextBlock>
+                        <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold">Apply:</Run>
+                            Select a template name in the dropdown. The form fills in automatically.</TextBlock>
+                        <TextBlock Margin="0,0,0,10" TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold">Delete:</Run>
+                            Select a template and click <Run FontWeight="SemiBold">Delete</Run>.</TextBlock>
+                        <TextBlock TextWrapping="Wrap">
+                            The expiration date is stored as days relative to the save date, so a template saved with an
+                            expiration 30 days out always produces an expiration 30 days from the day you apply it.
+                            Templates store the private key file path, never the key itself and never the key password.
+                        </TextBlock>
                     </StackPanel>
                 </Border>
 

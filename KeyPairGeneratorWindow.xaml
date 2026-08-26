@@ -35,18 +35,16 @@
                 Grid.Column="1"
                 Width="100"
                 Margin="10,0,0,0"
-                HorizontalAlignment="Left">
-                <ComboBoxItem Content="2048" />
-                <ComboBoxItem Content="3072" />
-                <ComboBoxItem Content="4096" />
-            </ComboBox>
+                HorizontalAlignment="Left"
+                ItemsSource="{Binding KeySizes}"
+                SelectedItem="{Binding SelectedKeySize}" />
         </Grid>
         <Button
             Grid.Row="1"
             Width="150"
             Margin="0,10,0,0"
             Padding="5"
-            Click="GenerateKeyPair_Click"
+            Command="{Binding GenerateKeyPairCommand}"
             Content="_Generate Key Pair" />
 
         <Grid Grid.Row="2" Margin="0,10,0,0">
@@ -64,19 +62,18 @@
             <PasswordBox
                 x:Name="PasswordBox"
                 Grid.Column="1"
-                Margin="10,0,10,0"
-                PasswordChanged="PasswordBox_PasswordChanged" />
+                Margin="10,0,10,0" />
 
             <TextBox
                 x:Name="PasswordTextBox"
                 Grid.Column="1"
                 Margin="10,0,10,0"
-                TextChanged="PasswordTextBox_TextChanged" />
+                Tag="NoPersist" />
 
             <Button
+                x:Name="ShowPasswordButton"
                 Grid.Column="2"
                 Padding="5"
-                Click="ShowPasswordButton_Click"
                 Content="S_how" />
         </Grid>
 
@@ -86,6 +83,7 @@
             Height="Auto"
             Margin="0,10,0,0"
             IsReadOnly="True"
+            Text="{Binding ResultText, UpdateSourceTrigger=PropertyChanged}"
             TextWrapping="Wrap" />
         <StackPanel
             Grid.Row="4"
@@ -95,12 +93,12 @@
             <Button
                 Margin="0,0,10,0"
                 Padding="5"
-                Click="SavePrivateKey_Click"
+                Command="{Binding SavePrivateKeyCommand}"
                 Content="Save P_rivate Key" />
             <Button
                 Margin="0,0,10,0"
                 Padding="5"
-                Click="SavePublicKey_Click"
+                Command="{Binding SavePublicKeyCommand}"
                 Content="Save P_ublic Key" />
         </StackPanel>
         <StackPanel
@@ -114,14 +112,14 @@
                 Padding="5"
                 Click="InsertButton_Click"
                 Content="_Insert"
-                IsEnabled="False" />
+                IsEnabled="{Binding CanInsert}" />
             <Button
                 x:Name="CopyButton"
                 Margin="10,10,0,0"
                 Padding="5"
                 Click="CopyButton_Click"
                 Content="_Copy to Clipboard"
-                IsEnabled="False"
+                IsEnabled="{Binding CanCopy}"
                 ToolTip="Copy private key file name to keyboard. Works across sessions." />
         </StackPanel>
     </Grid>

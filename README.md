@@ -1,5 +1,15 @@
 # StandardLicensingGenerator
 
+## Download
+
+Each release includes a prebuilt portable version — no build steps and no installation required:
+
+1. Open the [Releases page](https://github.com/lelandg/StandardLicensingGenerator/releases).
+2. Download `StandardLicensingGenerator-<version>-win-x64-portable.zip` from the latest release.
+3. Extract the archive anywhere (a folder, a USB drive) and run `StandardLicensingGenerator.exe`.
+
+The portable build is self-contained: it bundles the .NET runtime and all dependencies. Note that the app still writes its window settings and license templates to `%APPDATA%\StandardLicensingGenerator` on the machine it runs on, so it is portable in the "no install required" sense, not zero-footprint.
+
 ## Screenshots
 Main window
 ![Screenshot](Screenshots/Main.png)
@@ -18,8 +28,10 @@ A Windows desktop tool for generating licenses compatible with the [Standard.Lic
 
 - Create **Standard**, **Trial** license types
 - Set product name, version, and expiration date
+- Enter a validity period (e.g. `45 days`, `1 month`, `5 years`) to compute the expiration date, or set the date directly
 - Store customer information (name and email)
 - Add any additional attributes using JSON
+- Save license form values as named **templates** and recall them from a dropdown
 - Sign licenses using your own RSA private key
 - Save generated licenses to a file
 - Generate RSA key pairs for license signing
@@ -39,12 +51,27 @@ The UI is designed with sensible defaults and labeled inputs so generating a lic
 3. Select the desired license type (Standard or Trial):
    - **Standard**: Full license with custom customer information
    - **Trial**: Pre-configured with trial defaults and 30-day expiration
-4. Set an expiration date (required).
+4. Set the expiration date (required). Pick or type a validity period in the dropdown next to the date — presets like **1 month** or **5 years**, or free-form like `45 days` — and the date is computed from today. You can still edit the computed date directly in the date picker; a manual edit clears the period text, since the date no longer matches it.
 5. Optionally add extra attributes in JSON format (e.g. `{ "Seats": "5" }`).
 6. Browse to your private key file. PEM keys are recommended, but existing XML keys are also supported.
 7. If your key is password-protected, enter the password.
 8. Click **Generate License** to view the resulting license text.
 9. Use **File → Save License** to store the license in a `.lic` file, or copy to clipboard using the Copy button.
+
+### License Templates
+
+Templates store a named set of license form values so you do not re-enter them for every license.
+
+1. Fill in the license form.
+2. Type a name in the **Template** box and click **Save Template**.
+3. To reuse a template, select its name in the **Template** dropdown. The form fills in automatically.
+4. To remove a template, select it and click **Delete**.
+
+Notes:
+
+- The expiration date is stored as a number of days relative to the save date. A template saved with an expiration 30 days out always produces an expiration 30 days from the day you apply it.
+- Templates store the private key **file path**, never the key itself and never the key password.
+- Templates are saved in `%APPDATA%\StandardLicensingGenerator\Templates.json`.
 
 ### Generating Key Pairs
 
@@ -69,14 +96,14 @@ The generated license can then be validated in your application using the matchi
 1. Open the solution file `StandardLicensingGenerator.slnx` in Visual Studio 2022 or newer.
 2. Select the desired build configuration (Debug/Release).
 3. Build the solution using **Build > Build Solution** or press **Ctrl+Shift+B**.
-4. The compiled application will be available in the `bin/{Configuration}/net9.0-windows` directory.
+4. The compiled application will be available in the `bin/{Configuration}/net10.0-windows` directory.
 
 ### Building with JetBrains Rider
 
 1. Open the solution file `StandardLicensingGenerator.slnx` in Rider.
 2. Select the desired build configuration from the dropdown in the toolbar.
 3. Build the solution by clicking the build icon or pressing **Ctrl+F9**.
-4. The compiled application will be available in the `bin/{Configuration}/net9.0-windows` directory.
+4. The compiled application will be available in the `bin/{Configuration}/net10.0-windows` directory.
 
 ### Building with .NET CLI
 
@@ -92,13 +119,17 @@ The generated license can then be validated in your application using the matchi
 
 ### Creating a Standalone Executable
 
-To create a self-contained single-file executable for distribution:
+To create a self-contained single-file executable for distribution (this is the same command the release workflow runs):
 
 ```
-dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+dotnet publish StandardLicensingGenerator.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
 ```
 
-The resulting executable will be available in the `bin/Release/net9.0-windows/win-x64/publish` directory.
+The resulting executable will be available in the `bin/Release/net10.0-windows/win-x64/publish` directory.
+
+### Automated Release Builds
+
+Pushing a tag that starts with `v` (for example `v1.3.0`) triggers the `.github/workflows/release.yml` workflow. It runs the test suite, publishes the portable single-file win-x64 build with the command above, zips it as `StandardLicensingGenerator-<tag>-win-x64-portable.zip`, and attaches the zip to the GitHub Release for that tag.
 
 ---
 
@@ -548,7 +579,7 @@ public class RevocationList
 
 ## Distribution
 
-The StandardLicensingGenerator targets `.NET 9.0` for Windows and can be distributed in several ways:
+The StandardLicensingGenerator targets `.NET 10.0` for Windows and can be distributed in several ways:
 
 ### Self-contained Executable
 
@@ -578,7 +609,7 @@ For automatic updates using Visual Studio:
 ## System Requirements
 
 - Windows 10/11 or Windows Server 2016 or later
-- If using framework-dependent deployment: .NET 9.0 Runtime
+- If using framework-dependent deployment: .NET 10.0 Runtime (the portable release download needs no runtime)
 - No special hardware requirements
 
 ## Help
