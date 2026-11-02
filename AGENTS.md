@@ -97,7 +97,13 @@ here; read it there. What is specific to this repo:
   (verified locally with osv-scanner 2.7.0: 5 + 3 packages scanned, exit 0).
   No npm jobs: there is no `package-lock.json`.
 - Dependabot: `nuget` plus `github-actions` (`.github/dependabot.yml`). Alerts
-  are a separate repo setting and must be switched on for the config to matter.
+  are a separate repo setting and must be switched on for the config to matter;
+  `gh api -X GET repos/<owner>/<repo>/vulnerability-alerts` answers exit 0 = on,
+  404 = off, 403 = the token has no admin here (which is not "off").
+- Alerts and automatic security **updates** are two switches, not one. Alerts
+  only report; the half that opens PRs is `automated-security-fixes`. It is
+  deliberately OFF: this repo took its first scan with a pre-existing advisory
+  backlog, and enabling it would open that backlog as PRs at once.
 - PR reviewers configured for this repo: **Codex** (run locally against the
   committed branch before opening the PR) and **CodeRabbit**
   (`coderabbitai[bot]`). How to read their checks -- which one re-reviews a
