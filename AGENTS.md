@@ -98,8 +98,20 @@ here; read it there. What is specific to this repo:
   No npm jobs: there is no `package-lock.json`.
 - Dependabot: `nuget` plus `github-actions` (`.github/dependabot.yml`). Alerts
   are a separate repo setting and must be switched on for the config to matter;
-  `gh api -X GET repos/<owner>/<repo>/vulnerability-alerts` answers exit 0 = on,
-  404 = off, 403 = the token has no admin here (which is not "off").
+  Check it by HTTP STATUS, not by exit code. `gh api` exits 0 on success and 1
+  on any failure; it never exits 404 or 403. `<owner>/<repo>` is also shell
+  redirection, so the placeholder form cannot be pasted at all -- substitute
+  the real slug and read the status line:
+  `gh api -i -X GET repos/OWNER/REPO/vulnerability-alerts | head -1`
+  204 = on, 404 = off, 403 = the token has no admin here (which is not "off").
+- SHA-pinned actions get **no Dependabot alerts**: GitHub generates them only
+  for actions on semantic versions (docs: "About Dependabot alerts"). So no
+  security-update PR can ever fire for a pinned action, an
+  `applies-to: security-updates` group over github-actions is dead config, and
+  the weekly version update is their only automatic remediation -- which is why
+  the github-actions block carries no semver-major ignore. DETECTION comes from
+  osv-scanner's `github/actions` plugin, which is NOT in its default plugin set
+  and so is named explicitly in `security.yml`.
 - Alerts and automatic security **updates** are two switches, not one. Alerts
   only report; the half that opens PRs is `automated-security-fixes`. It is
   deliberately OFF: this repo took its first scan with a pre-existing advisory
