@@ -81,8 +81,10 @@ reviews:
     # reviews are enabled for the repository".
     auto_pause_after_reviewed_commits: 0
 
-    # `!` is a negative match. One label skips every AI reviewer: the same
-    # string is in .greptile/config.json `disabledLabels`. The label must be on
+    # `!` is a negative match. This repo has no `.greptile/config.json`, so the
+    # label skips CodeRabbit only -- Codex is run by hand and is unaffected.
+    # (Where GrepTile IS configured, the same string goes in its
+    # `disabledLabels`.) The label must be on
     # the PR when the review fires -- `gh pr create --label no-ai-review`, not
     # added afterwards, because the filter is read at review time.
     #
@@ -96,13 +98,13 @@ reviews:
       - "!no-ai-review"
 
     # Dependency bumps are judged by the advisory and the lockfile diff, not by
-    # a reviewer reading them. Mirrors .greptile/config.json `excludeAuthors`.
+    # a reviewer reading them. Matches GrepTile's `excludeAuthors` where that is configured.
     ignore_usernames:
       - "dependabot[bot]"
       - "renovate[bot]"
 
-  # Generated and binary-ish paths. Mirrors .greptile/config.json
-  # `ignorePatterns`; a leading `!` excludes.
+  # Generated and binary-ish paths; a leading `!` excludes. Kept in step with
+  # GrepTile's `ignorePatterns` where that is configured.
   path_filters:
     - "!package-lock.json"
     - "!uv.lock"

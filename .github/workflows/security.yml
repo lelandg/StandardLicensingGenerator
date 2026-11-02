@@ -11,12 +11,13 @@
 # Each scanner is its own job so one scanner's failure never prevents another
 # from running.
 #
-# Only the gitleaks job applies here. The two projects are NuGet (.csproj) with
-# no committed `packages.lock.json`, which is the only NuGet manifest
-# osv-scanner can parse; pointed at a bare .csproj it exits with a scanner
-# error, i.e. a permanently red check. Commit NuGet lockfiles
-# (`RestorePackagesWithLockFile`) and the osv-scanner job from the template
-# becomes worth adding. There is no npm lockfile, so the npm jobs are omitted.
+# Active here: gitleaks, and osv-scanner for the SHA-pinned actions only.
+# NuGet dependency scanning is NOT covered: the two projects are .csproj with
+# no committed `packages.lock.json`, the only NuGet manifest osv-scanner can
+# parse, and pointed at a bare .csproj it exits with a scanner error rather
+# than a findings result. Commit NuGet lockfiles
+# (`RestorePackagesWithLockFile`) to get that coverage. There is no npm
+# lockfile either, so the npm jobs are omitted.
 
 name: security
 
