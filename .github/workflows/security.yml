@@ -132,6 +132,23 @@ jobs:
           grep " osv-scanner_linux_amd64$" osv-scanner_SHA256SUMS | sha256sum -c -
           sudo install -m 0755 osv-scanner_linux_amd64 /usr/local/bin/osv-scanner
           osv-scanner --version
+      - name: Drop PR-supplied osv-scanner configuration
+        run: |
+          set -eu
+          # osv-scanner loads an osv-scanner.toml found beside any scanned
+          # manifest or workflow. A pull request controls this checkout, so it
+          # could add [[PackageOverrides]] ignore = true or [[IgnoredVulns]]
+          # and hide a vulnerable dependency while the job still reports
+          # clean. Same rule as the gitleaks job: suppression config is not
+          # accepted from a pull request. The scan below also uses an empty
+          # trusted config outside the checkout, because --config replaces
+          # the per-directory lookup.
+          find . -path ./.git -prune -o -type f -name osv-scanner.toml -print |
+            while IFS= read -r f; do
+              echo "::warning title=osv-scanner::removing PR-supplied $f before scanning (scanner config is not accepted from a pull request)"
+              rm -f -- "$f"
+            done
+          : > "$RUNNER_TEMP/osv-scanner-trusted.toml"
       # osv-scanner exit codes: 0 clean, 1 vulnerabilities found, anything else
       # is a scanner error (bad flag, no packages found, network) and must never
       # look like a findings result.
@@ -146,7 +163,10 @@ jobs:
           # scanned by nothing: GitHub generates Dependabot alerts only for
           # actions on semantic versions, never for SHA pins. Naming plugins
           # REPLACES the default list, so all four are listed here.
-          osv-scanner scan source --recursive ./ \
+          # --no-ignore: a pull request can add .gitignore rules that hide
+          # tracked manifests or workflows from a recursive scan.
+          osv-scanner scan source --recursive --no-ignore \
+            --config "$RUNNER_TEMP/osv-scanner-trusted.toml" ./ \
             --x-plugins lockfile --x-plugins sbom --x-plugins directory \
             --x-plugins github/actions || rc=$?
           case "$rc" in
