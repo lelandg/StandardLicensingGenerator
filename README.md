@@ -21,7 +21,10 @@ Keypair Generator
 
 ## License
 
-[Specify your license information here]
+StandardLicensingGenerator is released under the MIT License. See [LICENSE](LICENSE).
+
+## About
+
 A Windows desktop tool for generating licenses compatible with the [Standard.Licensing](https://github.com/junian/Standard.Licensing) library. The application lets you configure all available license options, sign them with your private key and save the result for distribution.
 
 ## Features
