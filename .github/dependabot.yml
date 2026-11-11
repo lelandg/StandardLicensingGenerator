@@ -1,0 +1,63 @@
+# Dependabot: free, GitHub-side dependency and advisory monitoring.
+# Policy: ~/.config/agents/AGENTS.md -> "Dependency, code, and secret scanning".
+#
+# Security updates are grouped into ONE PR per ecosystem. Version updates run
+# weekly, minor+patch only, grouped; majors are done by hand with a changelog
+# read. The `ignore` of semver-major gates VERSION updates only -- SECURITY
+# updates walk past it, so a security fix that lives in a new major still
+# arrives as a PR. "No PR" never means "no vulnerability": transitive-only deps
+# and advisories with no fixed version show up only as alerts. Read the alerts.
+# cooldown mirrors the 7-day minimum-package-age rule; security updates are not
+# delayed by it (remediation wins). A Dependabot PR carries no version bump.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - /
+      - /StandardLicensingGenerator.Tests
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Chicago
+    open-pull-requests-limit: 2
+    cooldown:
+      default-days: 7
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+      minor-and-patch:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:30"
+      timezone: America/Chicago
+    open-pull-requests-limit: 1
+    cooldown:
+      default-days: 7
+    groups:
+      # No `applies-to: security-updates` group here: it could never fire,
+      # because SHA-pinned actions get no Dependabot alerts.
+      actions:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    # NO semver-major ignore here, unlike the other ecosystems, and that is
+    # deliberate. GitHub generates Dependabot alerts only for actions on
+    # semantic versions, NOT for SHA pins (docs: "About Dependabot alerts"),
+    # so no security update can ever fire for a pinned action. A weekly
+    # VERSION update is therefore the only remediation path that exists, and
+    # ignoring majors would remove it. Advisory detection rests on the
+    # `github/actions` osv-scanner plugin named in security.yml, which misses
+    # known-vulnerable actions (see AGENTS.md): read an action's advisories
+    # before approving its bump.
