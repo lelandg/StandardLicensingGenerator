@@ -35,8 +35,10 @@ reviews:
   # is routinely some other branch's commit, and the query then returns
   # EMPTY, which reads exactly like a clean review. Empty is `missing`.
   #   SHA=$(gh pr view <PR> --json headRefOid -q .headRefOid)
-  #   gh api "repos/OWNER/REPO/commits/$SHA/check-runs" \
-  #     --jq '.check_runs[]|select(.name=="CodeRabbit")|.output.title' \
+  # Filter by name server-side: the endpoint returns 30 runs per page, so an
+  # unfiltered list can leave CodeRabbit on a page the query never reads.
+  #   gh api "repos/OWNER/REPO/commits/$SHA/check-runs?check_name=CodeRabbit" \
+  #     --jq '.check_runs[].output.title' \
   #     | grep . || echo "NO CodeRabbit check -- that head is NOT reviewed"
   # This setting narrows the hole; it does not close it.
   fail_commit_status: true
