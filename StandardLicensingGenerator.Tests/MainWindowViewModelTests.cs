@@ -351,4 +351,56 @@ public class MainWindowViewModelTests : IDisposable
         Assert.Equal("5", license.AdditionalAttributes.Get("seats"));
         Assert.Equal("10", license.AdditionalAttributes.Get("Seats"));
     }
+
+    [Fact]
+    public void GenerateLicense_Expiration_RoundTripsAsUtcMidnightOfSelectedDate()
+    {
+        // Standard.Licensing 1.3.x keeps only the date component of the
+        // expiration and stores it as UTC midnight of that calendar date
+        // (1.2.x stored the local time converted to UTC). Pin that behavior,
+        // because consumer apps read this value to decide when a license expires.
+        var keyGenerator = KeyGenerator.Create();
+        var keyPair = keyGenerator.GenerateKeyPair();
+        const string passPhrase = "test-pass";
+
+        var vm = CreateViewModel();
+        vm.KeyFilePath = WriteTempFile(keyPair.ToEncryptedPrivateKeyString(passPhrase));
+        vm.Password = passPhrase;
+        vm.LicenseType = "Standard";
+        vm.CustomerName = "Alice";
+        vm.CustomerEmail = "alice@example.com";
+        // A local date with a time of day: the time must be dropped, and the
+        // calendar date must not shift by the machine's UTC offset.
+        vm.ExpirationDate = new DateTime(2031, 3, 15, 17, 45, 30, DateTimeKind.Local);
+
+        vm.GenerateLicenseCommand.Execute(null);
+
+        Assert.Empty(_dialogs.Messages);
+        Assert.NotEqual("", vm.ResultText);
+
+        // The signed XML carries the RFC 1123 UTC-midnight string.
+        var expirationTag = System.Xml.Linq.XDocument.Parse(vm.ResultText)
+            .Root!.Element("Expiration");
+        Assert.NotNull(expirationTag);
+        Assert.Equal("Sat, 15 Mar 2031 00:00:00 GMT", expirationTag!.Value);
+
+        var license = License.Load(vm.ResultText);
+        Assert.Equal(new DateTime(2031, 3, 15, 0, 0, 0, DateTimeKind.Utc), license.Expiration);
+        Assert.Equal(DateTimeKind.Utc, license.Expiration.Kind);
+
+        // The signature covers the normalized expiration and still verifies.
+        Assert.True(license.VerifySignature(keyPair.ToPublicKeyString()));
+        Assert.Empty(license.Validate()
+            .Signature(keyPair.ToPublicKeyString())
+            .AssertValidLicense());
+
+        // 1.3.x compares calendar dates: valid through the day before the
+        // expiration date, expired on the expiration date itself.
+        Assert.Empty(license.Validate()
+            .ExpirationDate(new DateTime(2031, 3, 14, 23, 59, 0, DateTimeKind.Local))
+            .AssertValidLicense());
+        Assert.NotEmpty(license.Validate()
+            .ExpirationDate(new DateTime(2031, 3, 15, 0, 1, 0, DateTimeKind.Local))
+            .AssertValidLicense());
+    }
 }

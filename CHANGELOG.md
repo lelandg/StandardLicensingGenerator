@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-11-12
+
+- Updates Standard.Licensing from 1.2.1 to 1.3.1 (BouncyCastle.Cryptography 2.4.0 to 2.7.0). Signing (ECDSA-SHA512), key formats, and verification of existing licenses are unchanged.
+- **Changes the signed expiration value:** licenses now store the expiration as the selected calendar date at UTC midnight, and any time of day is dropped. With 1.2.1 the generator stored the local time converted to UTC. Consumer apps on Standard.Licensing 1.3.x treat a license as expired on its expiration date itself. Apps still on 1.2.x read the new value as the previous evening in time zones west of UTC, so update consumer apps to 1.3.x.
+- README and the Help window now describe these expiration semantics.
+
 ## [1.3.0] - 2026-08-26
 
 ### Added

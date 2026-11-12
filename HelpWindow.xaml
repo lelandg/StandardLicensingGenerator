@@ -78,7 +78,10 @@
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">3.</Run>
                             Set the expiration date: pick or type a validity period (e.g. 45 days, 1 month, 5 years)
-                            to compute the date from today, or edit the date directly in the date picker.</TextBlock>
+                            to compute the date from today, or edit the date directly in the date picker.
+                            The license stores the date only (UTC midnight, no time of day). Apps validating with
+                            Standard.Licensing 1.3.x accept it through the day before that date and treat it as
+                            expired on the date itself.</TextBlock>
                         <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
                             <Run FontWeight="SemiBold">4.</Run>
                             Add extra attributes in JSON format if needed (e.g. { "Seats": "5" }).</TextBlock>
