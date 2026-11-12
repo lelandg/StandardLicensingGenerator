@@ -91,7 +91,7 @@ Policy lives in `~/.config/agents/AGENTS.md` -> "Dependency, code, and secret
 scanning" and "Model delegation & cross-provider review". It is not restated
 here; read it there. What is specific to this repo:
 
-- CI runs `gitleaks` and `osv-scanner` on every PR, every push to `main`, and
+- CI runs `gitleaks`, `osv-scanner` and `zizmor` on every PR, every push to `main`, and
   weekly (`.github/workflows/security.yml`). osv-scanner reads both `.csproj`
   files directly; a committed `packages.lock.json` is NOT required for NuGet
   (verified locally with osv-scanner 2.7.0: 5 + 3 packages scanned, exit 0).
@@ -112,12 +112,13 @@ here; read it there. What is specific to this repo:
   security-update PR can ever fire for a pinned action, an
   `applies-to: security-updates` group over github-actions is dead config, and
   the weekly version update is their only automatic remediation -- which is why
-  the github-actions block carries no semver-major ignore. The only detection
-  is osv-scanner's `github/actions` plugin (not a default, so `security.yml`
-  names it), and it is weak: checked 2026-11-11 with osv-scanner 2.7.0, it did
-  not flag `tj-actions/changed-files` (GHSA-mrrh-fwg8-r2c3) at a vulnerable
-  SHA or at a vulnerable tag. Read an action's advisories before approving its
-  bump; a clean osv-scanner run does not clear an action.
+  the github-actions block carries no semver-major ignore. DETECTION comes
+  from the `zizmor` job in `security.yml`: it maps each SHA pin to its
+  release tag and fails on a known-vulnerable, impostor or unpinned action.
+  osv-scanner's `github/actions` plugin only lists the pinned actions: with
+  osv-scanner 2.7.0 it did not flag `tj-actions/changed-files`
+  (GHSA-mrrh-fwg8-r2c3) at a vulnerable SHA or tag. A SHA that no release
+  tag points at cannot be matched to an advisory, so pin released versions.
 - Alerts and automatic security **updates** are two switches, not one. Alerts
   only report; the half that opens PRs is `automated-security-fixes`. It is
   deliberately OFF: this repo took its first scan with a pre-existing advisory
