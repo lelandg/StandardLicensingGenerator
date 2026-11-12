@@ -55,6 +55,7 @@ The UI is designed with sensible defaults and labeled inputs so generating a lic
    - **Standard**: Full license with custom customer information
    - **Trial**: Pre-configured with trial defaults and 30-day expiration
 4. Set the expiration date (required). Pick or type a validity period in the dropdown next to the date — presets like **1 month** or **5 years**, or free-form like `45 days` — and the date is computed from today. You can still edit the computed date directly in the date picker; a manual edit clears the period text, since the date no longer matches it.
+   The license stores the calendar date only, as UTC midnight (for example `Sat, 15 Mar 2031 00:00:00 GMT`); any time of day is dropped. With Standard.Licensing 1.3.x, `Validate().ExpirationDate()` treats the license as valid through the day **before** the expiration date and expired on the date itself. Consumer apps should use Standard.Licensing 1.3.x: an app on 1.2.x reads UTC midnight as the previous evening in time zones west of UTC.
 5. Optionally add extra attributes in JSON format (e.g. `{ "Seats": "5" }`).
 6. Browse to your private key file. PEM keys are recommended, but existing XML keys are also supported.
 7. If your key is password-protected, enter the password.
