@@ -46,8 +46,9 @@ tell you:
   `dotnet build` with the .NET SDK. Output: `bin/{Configuration}/net10.0-windows/`.
 - **Linux/WSL (verification only):** cross-build with
   `dotnet build -p:EnableWindowsTargeting=true`.
-  **After any Linux build, delete `obj/` and `bin/` before the repo is used
-  from Windows again.** Linux restore artifacts contain Linux NuGet paths and
+  **After any Linux build, delete `obj/` and `bin/` in both project folders
+  (the repo root and `StandardLicensingGenerator.Tests/`) before the repo is
+  used from Windows again.** Linux restore artifacts contain Linux NuGet paths and
   they break the Rider/Windows build with package-not-found errors.
 - Build before you claim a change works, and run `dotnet test` on Windows for
   ViewModel or model changes (the tests cannot execute on Linux).

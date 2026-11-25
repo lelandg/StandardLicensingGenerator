@@ -20,6 +20,8 @@ this file too; nothing here is a rule other CLIs must avoid.)
   Rider needs a real Windows .NET SDK installed for SDK resolution.
 - WSL verification builds: user-local SDK at `~/.dotnet`, e.g.
   `DOTNET_ROOT=~/.dotnet ~/.dotnet/dotnet build -p:EnableWindowsTargeting=true`.
-  Then `rm -rf obj bin` per the AGENTS.md rule — Linux restore artifacts break
+  Then
+  `rm -rf obj bin StandardLicensingGenerator.Tests/obj StandardLicensingGenerator.Tests/bin`
+  per the AGENTS.md rule — Linux restore artifacts break
   Rider (confirmed 2026-08-20: MSB4236 plus `/home/leland/.nuget` paths in
   `obj/`).
