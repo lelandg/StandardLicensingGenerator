@@ -1,7 +1,8 @@
 # AGENTS.md — StandardLicensingGenerator
 
-Canonical instructions for every AI coding agent in this repo (Claude, Codex,
-Copilot, Gemini, and others). Tool-specific mechanisms live in `CLAUDE.md`.
+Canonical instructions for every AI coding agent in this repo (Claude Code,
+Codex, Copilot, Antigravity/agy, and others). `CLAUDE.md` adds only Claude
+Code mechanics and machine build notes; no rule lives only there.
 
 ## Project overview
 
@@ -20,37 +21,37 @@ save the result as a `.lic` file. The app also generates RSA key pairs.
 
 ## Structure
 
-- `MainWindow.xaml(.cs)` / `KeyPairGeneratorWindow.xaml(.cs)` — views; thin
-  code-behind (window lifetime, dialogs ownership, clipboard, DialogResult).
-- `ViewModels/` — presentation logic (`MainWindowViewModel`,
-  `KeyPairGeneratorViewModel`). New UI logic goes here, not in code-behind.
-- `Services/` — `IDialogService`/`DialogService`; ViewModels never open
-  dialogs directly.
-- `Models/` — `LicenseTemplate` + `LicenseTemplateStore`
+The folder layout is readable from the tree; these are the parts it does not
+tell you:
+
+- New UI logic goes in `ViewModels/`, not in code-behind. The views
+  (`MainWindow.xaml(.cs)`, `KeyPairGeneratorWindow.xaml(.cs)`) keep thin
+  code-behind: window lifetime, dialog ownership, clipboard, DialogResult.
+- ViewModels never open dialogs directly; they go through
+  `Services/` (`IDialogService`/`DialogService`).
+- `Models/` holds `LicenseTemplate` + `LicenseTemplateStore`
   (`%APPDATA%\StandardLicensingGenerator\Templates.json`). Templates must
   never contain the key password.
-- `KeyFormatUtility.cs` — PEM/XML key normalization.
-- `Views/CustomMessageBox.*` — themed message box. **Always use
-  `Views.CustomMessageBox.Show(...)`, never `MessageBox.Show`.**
-  `Views/PasswordReveal.cs` — shared PasswordBox/TextBox reveal sync.
-- `UiSettings/` — window position/size persistence (`System.Text.Json`).
-  Controls with `Tag="NoPersist"` are excluded — required for password
-  mirrors and the template selector.
-- `Extensions/`, `Resources/`, `Screenshots/` — support code and assets.
+- Use `Views.CustomMessageBox.Show(...)` instead of `MessageBox.Show`, so
+  dialogs follow the app theme.
+- `UiSettings/` persists window position/size (`System.Text.Json`). Controls
+  with `Tag="NoPersist"` are excluded — required for password mirrors and the
+  template selector.
 - `StandardLicensingGenerator.Tests/` — xunit tests for ViewModel and model
   logic.
 
 ## Build and verify
 
 - **Windows (normal path):** build in Rider or Visual Studio, or
-  `dotnet build` with the .NET SDK. Output: `bin/{Configuration}/net9.0-windows/`.
+  `dotnet build` with the .NET SDK. Output: `bin/{Configuration}/net10.0-windows/`.
 - **Linux/WSL (verification only):** cross-build with
   `dotnet build -p:EnableWindowsTargeting=true`.
-  **After any Linux build, delete `obj/` and `bin/` before the repo is used
-  from Windows again.** Linux restore artifacts contain Linux NuGet paths and
+  **After any Linux build, delete `obj/` and `bin/` in both project folders
+  (the repo root and `StandardLicensingGenerator.Tests/`) before the repo is
+  used from Windows again.** Linux restore artifacts contain Linux NuGet paths and
   they break the Rider/Windows build with package-not-found errors.
-- Build before you claim a change works. There is no test project; verify
-  pure-logic changes with a scratch console program when practical.
+- Build before you claim a change works, and run `dotnet test` on Windows for
+  ViewModel or model changes (the tests cannot execute on Linux).
 
 ## Correctness rules for license data
 
@@ -75,11 +76,17 @@ as the user typed it, because consumers validate and compare these values.
 - File-scoped namespaces; match existing code style and comment density.
 - Keep changes scoped; fix the root cause, not the symptom.
 - Versioning lives in the csproj (`Version`, `AssemblyVersion`, `FileVersion`).
-  Never hand-edit these or the changelog — use the version tool (see
-  `CLAUDE.md`). Bump the version and changelog in the same commit before any
-  push to `main` or PR.
-- Small, low-impact changes go straight to `main`. Substantial work gets a
-  feature branch cut from `origin/main` and a PR per finished feature.
+  Never hand-edit these or the changelog: the lander cuts the bump and the
+  changelog entry at merge time
+  (`python3 ~/.claude/skills/land-pr/pr_tool.py`; rules in
+  `~/.claude/instructions/landing-and-versioning.md`). A PR body carries a
+  `## Release notes` section instead. For a check, a backfill, or a release
+  outside a PR, the tool is
+  `python3 ~/.claude/skills/version-manager/version_tool.py --repo <abs-path>`
+  (`python` on native Windows).
+- Branching and PRs follow the global rules: non-functional changes (docs,
+  comments, agent-instruction files) may go straight to `main`; any code
+  change gets a branch cut from `origin/main` and a PR per finished feature.
 - Docs go in Markdown. User-facing behavior changes must update `README.md`
   and the Help window (`HelpWindow.xaml`) together — they duplicate content.
 - Check existing GitHub issues and recent git history before filing or fixing.
@@ -87,50 +94,26 @@ as the user typed it, because consumers validate and compare these values.
 
 ## Scanning & review
 
-Policy lives in `~/.config/agents/AGENTS.md` -> "Dependency, code, and secret
-scanning" and "Model delegation & cross-provider review". It is not restated
-here; read it there. What is specific to this repo:
+Policy lives in `~/.config/agents/AGENTS.md` -> "Dependencies, advisories, and
+scanning" (full text: `~/.claude/instructions/security-scanning.md`) and
+"Model delegation & cross-provider review". It is not restated here; read it
+there. What is specific to this repo:
 
-- CI runs `gitleaks`, `osv-scanner` and `zizmor` on every PR, every push to `main`, and
-  weekly (`.github/workflows/security.yml`). osv-scanner reads both `.csproj`
-  files directly; a committed `packages.lock.json` is NOT required for NuGet
-  (verified locally with osv-scanner 2.7.0: 5 + 3 packages scanned, exit 0).
-  The shared workflow's two npm jobs are present but skip with
-  a notice, because there is no root `package-lock.json`.
-- Dependabot: `nuget` plus `github-actions` (`.github/dependabot.yml`). Version
-  updates run from the config alone. Security updates also need Dependabot
-  alerts, a separate repo setting. Check it by HTTP STATUS, not by exit code. `gh api` exits 0 on success and 1
-  on any failure; it never exits 404 or 403. `<owner>/<repo>` is also shell
-  redirection, so the placeholder form cannot be pasted at all -- substitute
-  the real slug and read the status line:
-  `gh api -i -X GET repos/OWNER/REPO/vulnerability-alerts | head -1`
-  204 = on, 403 = the token has no admin here (which is not "off"), 404 = off
-  only when an admin token gets it: GitHub also answers 404 to a token without
-  the permission, so confirm with an admin token first.
-- SHA-pinned actions get **no Dependabot alerts**: GitHub generates them only
-  for actions on semantic versions (docs: "About Dependabot alerts"). So no
-  security-update PR can ever fire for a pinned action, an
-  `applies-to: security-updates` group over github-actions is dead config, and
-  the weekly version update is their only automatic remediation -- which is why
-  the github-actions block carries no semver-major ignore. DETECTION comes
-  from the `zizmor` job in `security.yml`: it maps each SHA pin to its
-  release tag and fails on a known-vulnerable, impostor or unpinned action.
-  osv-scanner's `github/actions` plugin only lists the pinned actions: with
-  osv-scanner 2.7.0 it did not flag `tj-actions/changed-files`
-  (GHSA-mrrh-fwg8-r2c3) at a vulnerable SHA or tag. zizmor looks up a SHA
-  pin by one tag: for a root action (owner/repo@sha) the longest tag
-  without a `/`, for a sub-action the longest tag under its path or its
-  last directory (else the longest of all). The job fails unless that tag, and any tag tied
-  with it, is a plain release version (v1, v1.2.3): an untagged commit,
-  a non-version tag or a path-prefixed tag matches no advisory. Pin
-  released versions.
-- Alerts and automatic security **updates** are two switches, not one. Alerts
-  only report; the half that opens PRs is `automated-security-fixes`. It is
-  deliberately OFF: this repo took its first scan with a pre-existing advisory
-  backlog, and enabling it would open that backlog as PRs at once.
-- PR reviewers configured for this repo: **Codex** (run locally against the
-  committed branch before opening the PR) and **CodeRabbit**
-  (`coderabbitai[bot]`). How to read their checks -- which one re-reviews a
-  push, why a green check does not mean "no findings", and which label skips
-  which bot -- is in the global policy cited above and is deliberately not
-  repeated here.
+- CI: `gitleaks`, `osv-scanner` and `zizmor` on every PR, every push to
+  `main`, and weekly (`.github/workflows/security.yml`). Dependabot covers
+  `nuget` and `github-actions` (`.github/dependabot.yml`);
+  `automated-security-fixes` is deliberately off. Read
+  `Docs/security-scanning.md` before changing `.github/**` or triaging a
+  Dependabot or zizmor alert.
+- **PR reviewers.** The review council in the global rules applies here; its
+  members are whatever `~/.config/agents/council.toml` seats, and the runner
+  and commands are in `~/.claude/instructions/model-delegation.md`. This repo
+  adds **CodeRabbit** (`coderabbitai[bot]`): automatic on every PR, it
+  re-reviews each push, and it skips drafts, Dependabot PRs and any PR opened
+  already carrying the `no-ai-review` label. There is no GrepTile here. The
+  list is additive, not closed: nothing named here replaces a council member.
+  A green `CodeRabbit` check does not mean "no findings" or even that a review
+  ran: read the check run's output title (`Finished` = reviewed) and the
+  inline comments. The commands and the label mechanics are in the header
+  comments of `.coderabbit.yaml`; the general procedure is in
+  `~/.claude/instructions/pr-review-automation.md`.
