@@ -1,4 +1,4 @@
-@AGENTS.md
+# GEMINI.md
 
-GEMINI.md — this project's canonical agent rules live in `AGENTS.md`
-(imported above). No Gemini-specific additions yet.
+All rules for this repository are in `AGENTS.md`, which agy loads directly.
+This file adds nothing Gemini- or agy-specific.
